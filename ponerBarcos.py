@@ -60,7 +60,7 @@ def clear_board():
 
 def place_ships():
     clear_board()
-    for size in [5, 4, 3, 2, 2]:  # ship sizes
+    for size in [5, 4, 3, 2, 2, 1, 1, 1]:  # ship sizes
         ship_coords = generate_ship(size)
         ships.append(ship_coords)
         for coord in ship_coords:
