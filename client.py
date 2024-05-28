@@ -2,7 +2,7 @@
 from tkinter import Tk, Frame, Scrollbar, Label, END, Entry, Text, VERTICAL, Button, messagebox #Tkinter Python Module for GUI  
 import socket #Sockets for network connection
 import threading # for multiple proccess 
-import shutil
+import csv
 import ply.lex as lex
 import ply.yacc as yacc
 import re
@@ -50,9 +50,13 @@ def handle_command(entrada):
         vertical_coordinate = coordinate[0]
         horizontal_coordinate = coordinate[1:]
         
-        message = f"Comando: {action}\nCoordenada vertical: {vertical_coordinate}\nCoordenada horizontal: {horizontal_coordinate}"
-        
-        messagebox.showinfo("Comando", message)
+        #message = f"Comando: {action}\nCoordenada vertical: {vertical_coordinate}\nCoordenada horizontal: {horizontal_coordinate}"
+        #messagebox.showinfo("Comando", message)
+
+        if action == t_ATACAR:
+            coord = vertical_coordinate + horizontal_coordinate
+            print(check_coordinate(coord, data))
+
     except Exception as e:
         print("mensaje normal")
 
@@ -60,6 +64,33 @@ def eliminar_nombre(texto):
     # La expresión regular busca cualquier palabra seguida de " : "
     texto_limpio = re.sub(r'\w+: ', '', texto)
     return texto_limpio
+
+def load_data(file_name):
+    with open(file_name, 'r') as file:
+        reader = csv.reader(file)
+        next(reader)  # Skip the header
+        data = {rows[0]: int(rows[1]) for rows in reader}
+    return data
+
+def check_coordinate(coord, data):
+    if coord in data:
+        if data[coord] == 1:
+            data[coord] = -1  # Cambia el valor a -1
+            message = "¡Impacto en un barco!"
+        elif data[coord] == 0:
+            message = "Agua"
+        elif data[coord] == -1:
+            message = "Ya habías impactado este barco antes"
+    else:
+        return "Coordenada no válida"
+
+    # Verifica si aún hay barcos en el diccionario
+    if 1 in data.values():
+        message += "\nAún hay barcos"
+    else:
+        message += "\nTodos los barcos destruidos"
+
+    return message
 
 class GUI:
     client_socket = None
@@ -177,7 +208,7 @@ class GUI:
 
 #the mail function 
 if __name__ == '__main__':
-    shutil.copyfile("tablero.csv", "temp.csv")
+    data = load_data("tablero.csv")
     root = Tk()
     gui = GUI(root)
     root.protocol("WM_DELETE_WINDOW", gui.on_close_window)
