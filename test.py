@@ -2,6 +2,10 @@ import ply.lex as lex
 import ply.yacc as yacc
 import tkinter as tk
 from tkinter import messagebox
+import shutil
+
+tab_original = "tablero.csv"
+tabl_duplicado = "copia.csv"
 
 # Definimos los tokens
 tokens = (
@@ -54,6 +58,7 @@ def handle_command():
         
         message = f"Comando: {action}\nCoordenada vertical: {vertical_coordinate}\nCoordenada horizontal: {horizontal_coordinate}"
         
+        shutil.copyfile(tab_original, tabl_duplicado)
         messagebox.showinfo("Comando", message)
     except Exception as e:
         messagebox.showerror("Error", str(e))
