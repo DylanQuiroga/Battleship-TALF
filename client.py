@@ -55,13 +55,13 @@ def handle_command(entrada):
 
         if action == t_ATACAR:
             coord = vertical_coordinate + horizontal_coordinate
-            print(check_coordinate(coord, data))
+            mensaje = check_coordinate(coord, data)
 
     except Exception as e:
         print("mensaje normal")
 
 def eliminar_nombre(texto):
-    # La expresión regular busca cualquier palabra seguida de " : "
+    # La expresión regular busca cualquier palabra seguida de ": "
     texto_limpio = re.sub(r'\w+: ', '', texto)
     return texto_limpio
 
@@ -206,10 +206,9 @@ class GUI:
             self.client_socket.close()
             exit(0)
 
-#the mail function 
-if __name__ == '__main__':
-    data = load_data("tablero.csv")
-    root = Tk()
-    gui = GUI(root)
-    root.protocol("WM_DELETE_WINDOW", gui.on_close_window)
-    root.mainloop()
+
+data = load_data("tablero.csv")
+root = Tk()
+gui = GUI(root)
+root.protocol("WM_DELETE_WINDOW", gui.on_close_window)
+root.mainloop()
