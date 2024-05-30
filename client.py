@@ -56,6 +56,7 @@ def handle_command(entrada):
         if action == t_ATACAR:
             coord = vertical_coordinate + horizontal_coordinate
             mensaje = check_coordinate(coord, data)
+            return mensaje
 
     except Exception as e:
         print("mensaje normal")
@@ -86,11 +87,11 @@ def check_coordinate(coord, data):
 
     # Verifica si aún hay barcos en el diccionario
     if 1 in data.values():
-        message += "\nAún hay barcos"
+        message += ", aún hay barcos"
     else:
-        message += "\nTodos los barcos destruidos"
+        message += ", todos los barcos destruidos"
 
-    return message
+    return str(message)
 
 class GUI:
     client_socket = None
@@ -132,30 +133,32 @@ class GUI:
          
             if "joined" in message:
                 user = message.split(":")[1]
-                message = user + " has joined"
+                message = user + " ha entrado"
                 self.chat_transcript_area.insert('end', message + '\n')
                 self.chat_transcript_area.yview(END)
             else:
                 # Aqui se puede empezar a analizar los comandos de PLY
                 mensaje_limpio = eliminar_nombre(message)
                 print(mensaje_limpio)
-                handle_command(mensaje_limpio)
+                mensaje = handle_command(mensaje_limpio)
                 self.chat_transcript_area.insert('end', message + '\n')
                 self.chat_transcript_area.yview(END)
+                self.enviarMensajePLY(mensaje)
+                self.clear_text()
 
         so.close()
 
     def display_name_section(self):
         frame = Frame()
-        Label(frame, text='Enter your name:', font=("Helvetica", 16)).pack(side='left', padx=10)
+        Label(frame, text='Ingresa tu nombre:', font=("Helvetica", 16)).pack(side='left', padx=10)
         self.name_widget = Entry(frame, width=50, borderwidth=2)
         self.name_widget.pack(side='left', anchor='e')
-        self.join_button = Button(frame, text="Join", width=10, command=self.on_join).pack(side='left')
+        self.join_button = Button(frame, text="Entrar", width=10, command=self.on_join).pack(side='left')
         frame.pack(side='top', anchor='nw')
 
     def display_chat_box(self):
         frame = Frame()
-        Label(frame, text='Chat Box:', font=("Serif", 12)).pack(side='top', anchor='w')
+        Label(frame, text='Caja de texto:', font=("Serif", 12)).pack(side='top', anchor='w')
         self.chat_transcript_area = Text(frame, width=60, height=10, font=("Serif", 12))
         scrollbar = Scrollbar(frame, command=self.chat_transcript_area.yview, orient=VERTICAL)
         self.chat_transcript_area.config(yscrollcommand=scrollbar.set)
@@ -166,7 +169,7 @@ class GUI:
 
     def display_chat_entry_box(self):
         frame = Frame()
-        Label(frame, text='Enter message:', font=("Serif", 12)).pack(side='top', anchor='w')
+        Label(frame, text='Ingresa un mensaje:', font=("Serif", 12)).pack(side='top', anchor='w')
         self.enter_text_widget = Text(frame, width=60, height=3, font=("Serif", 12))
         self.enter_text_widget.pack(side='left', pady=15)
         self.enter_text_widget.bind('<Return>', self.on_enter_key_pressed)
@@ -199,13 +202,21 @@ class GUI:
         self.client_socket.send(message)
         self.enter_text_widget.delete(1.0, 'end')
         return 'break'
-
+    
+    def enviarMensajePLY(self, mensaje: str):
+        if not mensaje is None:
+            mensajeBytes = ("Capitán : " + mensaje).encode('utf-8')
+            self.chat_transcript_area.insert('end', mensajeBytes.decode('utf-8') + '\n')
+            self.chat_transcript_area.yview(END)
+            self.client_socket.send(mensajeBytes)
+            self.enter_text_widget.delete(1.0, 'end')
+            return 'break'
+        
     def on_close_window(self):
         if messagebox.askokcancel("Quit", "Do you want to quit?"):
             self.root.destroy()
             self.client_socket.close()
             exit(0)
-
 
 data = load_data("tablero.csv")
 root = Tk()
