@@ -1,0 +1,124 @@
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import Canvas
+import csv
+import shutil
+import ply.lex as lex
+import ply.yacc as yacc
+
+tab_original = "tablero.csv"
+tabl_duplicado = "copia.csv"
+
+# Definir los tokens
+tokens = (
+    'ATACAR',
+    'DEFENDER',
+    'COORDINATE',
+)
+
+# Definir las expresiones regulares para los tokens
+t_ATACAR = r'Atacar | atacar | ATACAR'
+t_DEFENDER = r'Defender | defender | DEFENDER'
+t_COORDINATE = r'[A-J][1-9]0?'
+
+# Ignorar espacios en blanco y tabulaciones
+t_ignore = ' \t'
+
+# Definir la gramática
+def p_command(p):
+    'command : action COORDINATE'
+    p[0] = (p[1], p[2])
+
+def p_action(p):
+    '''action : ATACAR
+              | DEFENDER'''
+    p[0] = p[1]
+
+# Manejar errores de sintaxis
+def p_error(p):
+    print(f"Error de sintaxis en: {p.value}")
+
+# Construir el lexer y el parser
+lexer = lex.lex()
+parser = yacc.yacc()
+
+# Clase para la interfaz del tablero
+class BoardGUI:
+    def __init__(self, root, csv_file):
+        self.root = root
+        self.canvas = tk.Canvas(self.root, width=440, height=440)  # Ajustar el tamaño del canvas
+        self.canvas.pack()
+        self.board = self.load_board_from_csv(csv_file)
+        self.draw_board()
+
+    def load_board_from_csv(self, filename):
+        board = {}
+        with open(filename, 'r') as file:
+            reader = csv.reader(file)
+            next(reader)  # Saltar la cabecera
+            for row in reader:
+                coord, state = row
+                board[coord] = int(state)
+        return board
+
+    def draw_board(self):
+        cell_width = 40
+        cell_height = 40
+        offset = 20  # Offset para los textos de las filas y columnas
+
+        # Dibujar letras de filas
+        for i in range(10):
+            self.canvas.create_text(offset // 2, i * cell_height + cell_height // 2 + offset, text=chr(65 + i), fill='black', font=('Arial black', 10))
+
+        # Dibujar números de columnas
+        for j in range(10):
+            self.canvas.create_text(j * cell_width + cell_width // 2 + offset, offset // 2, text=str(j + 1), fill='black', font=('Arial black', 10))
+
+        # Dibujar el tablero
+        for i in range(10):
+            for j in range(10):
+                coord = chr(65 + j) + str(i + 1)
+                x0, y0 = j * cell_width + offset, i * cell_height + offset
+                x1, y1 = x0 + cell_width, y0 + cell_height
+                if coord in self.board and self.board[coord] == 1:
+                    self.canvas.create_rectangle(x0, y0, x1, y1, fill='yellow')
+                else:
+                    self.canvas.create_rectangle(x0, y0, x1, y1, fill='blue')
+
+# Crear la ventana principal
+window = tk.Tk()
+window.title("Batalla Naval")
+window.resizable(False, False)  # Hacer que la ventana no sea redimensionable
+
+# Crear el tablero y mostrarlo
+board_gui = BoardGUI(window, "tablero.csv")
+
+# Función para manejar el comando
+def handle_command():
+    command = entry.get()
+    try:
+        result = parser.parse(command)
+        
+        action = result[0]
+        coordinate = result[1]
+        
+        vertical_coordinate = coordinate[0]
+        horizontal_coordinate = coordinate[1:]
+        
+        message = f"Comando: {action}\nCoordenada vertical: {vertical_coordinate}\nCoordenada horizontal: {horizontal_coordinate}"
+        
+        shutil.copyfile(tab_original, tabl_duplicado)
+        messagebox.showinfo("Comando", message)
+    except Exception as e:
+        messagebox.showerror("Error", str(e))
+
+# Campo de entrada para el comando
+entry = tk.Entry(window)
+entry.pack()
+
+# Botón para manejar el comando
+button = tk.Button(window, text="Ingresar comando", command=handle_command)
+button.pack()
+
+# Iniciar la GUI
+window.mainloop()
