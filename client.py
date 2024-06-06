@@ -6,6 +6,7 @@ import csv
 import ply.lex as lex
 import ply.yacc as yacc
 import re
+import random
 
 # Definimos los tokens
 tokens = (
@@ -49,13 +50,15 @@ def handle_command(entrada):
         
         vertical_coordinate = coordinate[0]
         horizontal_coordinate = coordinate[1:]
-        
+        coord = vertical_coordinate + horizontal_coordinate
         #message = f"Comando: {action}\nCoordenada vertical: {vertical_coordinate}\nCoordenada horizontal: {horizontal_coordinate}"
         #messagebox.showinfo("Comando", message)
 
         if action == t_ATACAR:
-            coord = vertical_coordinate + horizontal_coordinate
             mensaje = check_coordinate(coord, data)
+            return mensaje
+        elif action == t_DEFENDER:
+            mensaje = defender_coordinate(coord, data)
             return mensaje
 
     except Exception as e:
@@ -82,11 +85,38 @@ def check_coordinate(coord, data):
             message = "Agua"
         elif data[coord] == -1:
             message = "Ya habías impactado este barco antes"
+        elif data[coord] == 2:
+            if random.random() < 0.5:
+                data[coord] = -1
+                message = "¡Impacto en un barco en posición de defenza!"
+            else:
+                message = "El misil ha fallado"
     else:
         return "Coordenada no válida"
 
     # Verifica si aún hay barcos en el diccionario
-    if 1 in data.values():
+    if 1 in data.values() or 2 in data.values():
+        message += ", aún hay barcos"
+    else:
+        message += ", todos los barcos destruidos"
+
+    return str(message)
+
+def defender_coordinate(coord, data):
+    if coord in data:
+        if data[coord] == 1:
+            data[coord] = 2 # el numero 2 es una casilla de barco en posición de defenza
+            message = "Barco en posición de defenza"
+        elif data[coord] == 0:
+            message = "No hay barcos en esta coordenada"
+        elif data[coord] == -1:
+            message = "Parte de barco destruida, no se puede defender"
+        elif data[coord] == 2:
+            message = "Este barco ya está en posición de defenza"
+    else:
+        return "Coordenada no válida"
+    
+    if 1 in data.values() or 2 in data.values():
         message += ", aún hay barcos"
     else:
         message += ", todos los barcos destruidos"
