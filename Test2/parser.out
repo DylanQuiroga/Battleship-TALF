@@ -1,0 +1,80 @@
+Created by PLY version 3.11 (http://www.dabeaz.com/ply)
+
+Grammar
+
+Rule 0     S' -> command
+Rule 1     command -> action COORDINATE
+Rule 2     command -> COMENZAR
+Rule 3     action -> ATACAR
+Rule 4     action -> DEFENDER
+
+Terminals, with rules where they appear
+
+ATACAR               : 3
+COMENZAR             : 2
+COORDINATE           : 1
+DEFENDER             : 4
+error                : 
+
+Nonterminals, with rules where they appear
+
+action               : 1
+command              : 0
+
+Parsing method: LALR
+
+state 0
+
+    (0) S' -> . command
+    (1) command -> . action COORDINATE
+    (2) command -> . COMENZAR
+    (3) action -> . ATACAR
+    (4) action -> . DEFENDER
+
+    COMENZAR        shift and go to state 3
+    ATACAR          shift and go to state 4
+    DEFENDER        shift and go to state 5
+
+    command                        shift and go to state 1
+    action                         shift and go to state 2
+
+state 1
+
+    (0) S' -> command .
+
+
+
+state 2
+
+    (1) command -> action . COORDINATE
+
+    COORDINATE      shift and go to state 6
+
+
+state 3
+
+    (2) command -> COMENZAR .
+
+    $end            reduce using rule 2 (command -> COMENZAR .)
+
+
+state 4
+
+    (3) action -> ATACAR .
+
+    COORDINATE      reduce using rule 3 (action -> ATACAR .)
+
+
+state 5
+
+    (4) action -> DEFENDER .
+
+    COORDINATE      reduce using rule 4 (action -> DEFENDER .)
+
+
+state 6
+
+    (1) command -> action COORDINATE .
+
+    $end            reduce using rule 1 (command -> action COORDINATE .)
+
