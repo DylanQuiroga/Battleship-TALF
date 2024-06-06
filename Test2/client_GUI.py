@@ -389,16 +389,16 @@ class GUI:
     def sendMessage(self):
         self.textCons.config(state=tk.DISABLED) 
         mensaje = analisis(self.msg)
-        while True:
-            if not mensaje is None:
-                self.server.send(mensaje.encode())
-                self.textCons.config(state = tk.NORMAL)
-                self.textCons.insert(tk.END, 
-                                "<You> " + mensaje + "\n\n") 
-                #print(self.msg)
-                self.textCons.config(state = tk.DISABLED) 
-                self.textCons.see(tk.END)
-                break
+        
+        if not mensaje is None:
+            self.server.send(mensaje.encode())
+            self.textCons.config(state = tk.NORMAL)
+            self.textCons.insert(tk.END, 
+                             "<You> " + mensaje + "\n\n") 
+            #print(self.msg)
+            self.textCons.config(state = tk.DISABLED) 
+            self.textCons.see(tk.END)
+        
             
 if __name__ == "__main__":
     ip_address = '26.169.180.70' #"127.0.0.1"
