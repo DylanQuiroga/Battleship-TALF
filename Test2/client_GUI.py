@@ -58,6 +58,7 @@ def analisis(entrada):
         return entrada
 
 def analizarMensaje(resultado):
+    global data
     try:
         if t_COMENZAR == resultado[0]:
             data = load_data('tablero.csv')
@@ -88,6 +89,7 @@ def analizarMensaje(resultado):
         return "error tipo 2"
 
 def load_data(file_name):
+    global data
     with open(file_name, 'r') as file:
         reader = csv.reader(file)
         next(reader)  # Skip the header
