@@ -1,6 +1,7 @@
 import tkinter as tk
 import csv
 import random
+from tkinter import messagebox
 
 class Board:
     def __init__(self):
@@ -42,7 +43,7 @@ class Board:
 
     def place_ships(self):
         self.clear_board()
-        for size in [5, 4, 3, 3, 2]:  # ship sizes
+        for size in [3, 3, 2, 2, 1, 1, 1, 1]:  # ship sizes
             ship_coords = self.generate_ship(size)
             self.ships.append(ship_coords)
             for coord in ship_coords:
@@ -94,6 +95,45 @@ class GUI:
         else:
             button.config(bg='yellow')
             self.board.button_states[coord] = 1
+            
+        # Validar la cantidad de casillas marcadas y la secuencia
+        marked_cells = [coord for coord, state in self.board.button_states.items() if state == 1]
+        if not self.valid_ships(marked_cells):
+            messagebox.showwarning("Advertencia", "¡Las casillas marcadas no forman barcos válidos!")
+            button.config(bg='SystemButtonFace')
+            self.board.button_states[coord] = 0
+    
+    def valid_ships(self, marked_cells):
+        
+        #funcion para validar si las celdas marcadas estan en vertical y horizontal
+        def is_linear(cells):
+            rows = sorted(int(cell[1:]) for cell in cells)
+            cols = sorted(ord(cell[0]) for cell in cells)
+            return (all(row == rows[0] for row in rows) and all(cols[i] - cols[i-1] == 1 for i in range(1, len(cols)))) or \
+                   (all(col == cols[0] for col in cols) and all(rows[i] - rows[i-1] == 1 for i in range(1, len(rows))))
+
+        def get_neighbors(coord):
+            col, row = ord(coord[0]), int(coord[1:])
+            neighbors = [
+                chr(col - 1) + str(row), chr(col + 1) + str(row),
+                chr(col) + str(row - 1), chr(col) + str(row + 1)
+            ]
+            return [n for n in neighbors if n in marked_cells]
+
+        visited = set()
+        for cell in marked_cells:
+            if cell not in visited:
+                stack = [cell]
+                current_ship = []
+                while stack:
+                    current = stack.pop()
+                    if current not in visited:
+                        visited.add(current)
+                        current_ship.append(current)
+                        stack.extend(get_neighbors(current))
+                if len(current_ship) not in [1, 2, 3] or not is_linear(current_ship):
+                    return False
+        return True
 
     def save_board(self):
         self.board.save_board_state('tablero.csv')
