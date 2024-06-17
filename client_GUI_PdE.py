@@ -9,6 +9,8 @@ import os
 import csv, random
 import ply.lex as lex
 import ply.yacc as yacc
+import pymongo
+from pymongo import MongoClient
 
 data = {}
 
@@ -62,8 +64,12 @@ def analizarMensaje(resultado):
     try:
         if t_COMENZAR == resultado[0]:
             data = load_data('tablero.csv')
+            valor = update_mongo_document()
             if data:
-                print("datos cargados correctamente")
+                print("datos cargados correctamente 1")
+            if valor:
+                print("datos cargados correctamente 2")
+
         elif t_ATACAR == resultado[0]:
             coord = resultado[1]
             coord_vertical = coord[0]
@@ -96,53 +102,135 @@ def load_data(file_name):
         data = {rows[0]: int(rows[1]) for rows in reader}
     return data
 
+def update_mongo_document():
+    try:
+        global data
+        filter_criteria = {"codigo": "987654321"}
+        # Conectar a la base de datos MongoDB
+        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        db = client['battleship']
+        collection = db['Potencias del eje']
+
+        # Generar el nuevo campo "tablero"
+        tablero = [{"coord": k, "state": v} for k, v in data.items()]
+
+        # Actualizar el documento
+        collection.update_one(filter_criteria, {"$set": {"tablero": tablero}})
+
+        # Cerrar la conexión
+        client.close()
+        return True
+    
+    except Exception as e:
+        print(f'Error: {e}')
+        return False
+
 def atacar_coordenada(coord):
-    global data
-    if coord in data:
-        if data[coord] == 1:
-            data[coord] = -1  # Cambia el valor a -1
-            message = "¡Impacto en un barco!"
-        elif data[coord] == 0:
+    filter_criteria = {"codigo": "123456789"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection = db['Aliados']
+
+    document = collection.find_one(filter_criteria)
+    tablero = document.get("tablero", [])
+    coord_state = None
+    still_ships = False
+    update_needed = False
+
+    if not document:
+        print("Documento no encontrado.")
+        return None
+
+    for item in tablero:
+        if item["coord"] == coord:
+            coord_state = item["state"]
+            if coord_state == 1:
+                item["state"] = -1
+                update_needed = True
+            elif coord_state == 2:
+                if random.random() < 0.5:
+                    item["state"] = -1
+                    update_needed = True
+                break
+
+        if item["state"] in [1, 2]:
+            still_ships = True
+
+    if update_needed:
+        collection.update_one(filter_criteria, {"$set": {"tablero": tablero}})
+
+    client.close()
+
+    if coord_state is not None:
+        if coord_state == 0:
             message = "Agua"
-        elif data[coord] == -1:
+        elif coord_state == 1:
+            message = "¡Impacto en un barco!"
+        elif coord_state == -1:
             message = "Ya habías impactado este barco antes"
-        elif data[coord] == 2:
+        elif coord_state == 2:
             if random.random() < 0.5:
                 data[coord] = -1
                 message = "¡Impacto en un barco en posición de defenza!"
             else:
                 message = "El misil ha fallado"
-    else:
-        return "Coordenada no válida"
 
-    # Verifica si aún hay barcos en el diccionario
-    if 1 in data.values() or 2 in data.values():
+    if still_ships:
         message += ", aún hay barcos"
     else:
         message += ", todos los barcos destruidos"
 
     return str(message)
 
+
 def defender_coordenada(coord):
-    global data
-    if coord in data:
-        if data[coord] == 1:
-            data[coord] = 2 # el numero 2 es una casilla de barco en posición de defenza
-            message = "Barco en posición de defenza"
-        elif data[coord] == 0:
-            message = "No hay barcos en esta coordenada"
-        elif data[coord] == -1:
-            message = "Parte de barco destruida, no se puede defender"
-        elif data[coord] == 2:
-            message = "Este barco ya está en posición de defenza"
-    else:
-        return "Coordenada no válida"
-    
-    if 1 in data.values() or 2 in data.values():
+    filter_criteria = {"codigo": "987654321"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection = db['Potencias del eje']
+
+    document = collection.find_one(filter_criteria)
+    if not document:
+        print("Documento no encontrado.")
+        return None
+
+    tablero = document.get("tablero", [])
+    coord_state = None
+    still_ships = False
+    update_needed = False
+
+    for item in tablero:
+        if item["coord"] == coord:
+            coord_state = item["state"]
+            if coord_state == 1:
+                item["state"] = 2
+                update_needed = True
+                message = "Barco en posición de defensa"
+            elif coord_state == 0:
+                message = "No hay barcos en esta coordenada"
+            elif coord_state == -1:
+                message = "Parte de barco destruida, no se puede defender"
+            elif coord_state == 2:
+                message = "Este barco ya está en posición de defensa"
+        
+        if item["state"] in [1, 2]:
+            still_ships = True
+
+    if update_needed:
+        collection.update_one(filter_criteria, {"$set": {"tablero": tablero}})
+
+    client.close()
+
+    if not coord_state:
+        message = "Coordenada no encontrada"
+
+    if still_ships:
         message += ", aún hay barcos"
     else:
         message += ", todos los barcos destruidos"
-
+    
     return str(message)
 
 class GUI:

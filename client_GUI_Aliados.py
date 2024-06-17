@@ -185,35 +185,52 @@ def atacar_coordenada(coord):
 
 
 def defender_coordenada(coord):
-    filter_criteria = {"codigo": "987654321"}
+    filter_criteria = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
     db = client['battleship']
-    collection = db['Potencia del eje']
+    collection = db['Aliados']
 
     document = collection.find_one(filter_criteria)
+    if not document:
+        print("Documento no encontrado.")
+        return None
+
     tablero = document.get("tablero", [])
+    coord_state = None
+    still_ships = False
+    update_needed = False
 
+    for item in tablero:
+        if item["coord"] == coord:
+            coord_state = item["state"]
+            if coord_state == 1:
+                item["state"] = 2
+                update_needed = True
+                message = "Barco en posición de defensa"
+            elif coord_state == 0:
+                message = "No hay barcos en esta coordenada"
+            elif coord_state == -1:
+                message = "Parte de barco destruida, no se puede defender"
+            elif coord_state == 2:
+                message = "Este barco ya está en posición de defensa"
+        
+        if item["state"] in [1, 2]:
+            still_ships = True
 
-    global data
-    if coord in data:
-        if data[coord] == 1:
-            data[coord] = 2 # el numero 2 es una casilla de barco en posición de defenza
-            message = "Barco en posición de defenza"
-        elif data[coord] == 0:
-            message = "No hay barcos en esta coordenada"
-        elif data[coord] == -1:
-            message = "Parte de barco destruida, no se puede defender"
-        elif data[coord] == 2:
-            message = "Este barco ya está en posición de defenza"
-    else:
-        return "Coordenada no válida"
-    
-    if 1 in data.values() or 2 in data.values():
+    if update_needed:
+        collection.update_one(filter_criteria, {"$set": {"tablero": tablero}})
+
+    client.close()
+
+    if not coord_state:
+        message = "Coordenada no encontrada"
+
+    if still_ships:
         message += ", aún hay barcos"
     else:
         message += ", todos los barcos destruidos"
-
+    
     return str(message)
 
 class GUI:
