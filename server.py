@@ -1,58 +1,115 @@
-#imports
 import socket 
-import threading
+from _thread import *
+import sys
+from collections import defaultdict as df
+import time
 
 
-class ChatServer:
-    
-    clients_list = []
-
-    last_received_message = ""
-
+class Server:
     def __init__(self):
-        self.server_socket = None
-        self.create_listening_server()
-    #listen for incoming connection
-    def create_listening_server(self):
-    
-        self.server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM) #create a socket using TCP port and ipv4
-        local_ip = '127.0.0.1'
-        local_port = 10319
-        # this will allow you to immediately restart a TCP server
-        self.server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        # this makes the server listen to requests coming from other computers on the network
-        self.server_socket.bind((local_ip, local_port))
-        print("Listening for incoming messages..")
-        self.server_socket.listen(2) #listen for incomming connections / max 2 clients
-        self.receive_messages_in_a_new_thread()
-    #fun to receive new msgs
-    def receive_messages(self, so):
-        while True:
-            incoming_buffer = so.recv(256) #initialize the buffer
-            if not incoming_buffer:
-                break
-            self.last_received_message = incoming_buffer.decode('utf-8')
-            self.broadcast_to_all_clients(so)  # send to all clients
-        so.close()
-    #broadcast the message to all clients 
-    def broadcast_to_all_clients(self, senders_socket):
-        for client in self.clients_list:
-            socket, (ip, port) = client
-            if socket is not senders_socket:
-                socket.sendall(self.last_received_message.encode('utf-8'))
+        self.rooms = df(list)
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
-    def receive_messages_in_a_new_thread(self):
+
+    def accept_connections(self, ip_address, port):
+        self.ip_address = ip_address
+        self.port = port
+        self.server.bind((self.ip_address, int(self.port)))
+        self.server.listen(100)
+
         while True:
-            client = so, (ip, port) = self.server_socket.accept()
-            self.add_to_clients_list(client)
-            print('Connected to ', ip, ':', str(port))
-            t = threading.Thread(target=self.receive_messages, args=(so,))
-            t.start()
-    #add a new client 
-    def add_to_clients_list(self, client):
-        if client not in self.clients_list:
-            self.clients_list.append(client)
+            connection, address = self.server.accept()
+            print(str(address[0]) + ":" + str(address[1]) + " Connected")
+
+            start_new_thread(self.clientThread, (connection,))
+
+        self.server.close()
+
+    
+    def clientThread(self, connection):
+        user_id = connection.recv(1024).decode().replace("User ", "")
+        room_id = connection.recv(1024).decode().replace("Join ", "")
+
+        if room_id not in self.rooms:
+            connection.send("New Group created".encode())
+        else:
+            connection.send("Welcome to chat room".encode())
+
+        self.rooms[room_id].append(connection)
+
+        while True:
+            try:
+                message = connection.recv(1024)
+                print(str(message.decode()))
+                if message:
+                    if str(message.decode()) == "FILE":
+                        self.broadcastFile(connection, room_id, user_id)
+
+                    else:
+                        message_to_send = "<" + str(user_id) + "> " + message.decode()
+                        self.broadcast(message_to_send, connection, room_id)
+
+                else:
+                    self.remove(connection, room_id)
+            except Exception as e:
+                print(repr(e))
+                print("Client disconnected earlier")
+                break
+    
+    
+    def broadcastFile(self, connection, room_id, user_id):
+        file_name = connection.recv(1024).decode()
+        lenOfFile = connection.recv(1024).decode()
+        for client in self.rooms[room_id]:
+            if client != connection:
+                try: 
+                    client.send("FILE".encode())
+                    time.sleep(0.1)
+                    client.send(file_name.encode())
+                    time.sleep(0.1)
+                    client.send(lenOfFile.encode())
+                    time.sleep(0.1)
+                    client.send(user_id.encode())
+                except:
+                    client.close()
+                    self.remove(client, room_id)
+
+        total = 0
+        print(file_name, lenOfFile)
+        while str(total) != lenOfFile:
+            data = connection.recv(1024)
+            total = total + len(data)
+            for client in self.rooms[room_id]:
+                if client != connection:
+                    try: 
+                        client.send(data)
+                        # time.sleep(0.1)
+                    except:
+                        client.close()
+                        self.remove(client, room_id)
+        print("Sent")
+
+
+
+    def broadcast(self, message_to_send, connection, room_id):
+        for client in self.rooms[room_id]:
+            if client != connection:
+                try:
+                    client.send(message_to_send.encode())
+                except:
+                    client.close()
+                    self.remove(client, room_id)
+
+    
+    def remove(self, connection, room_id):
+        if connection in self.rooms[room_id]:
+            self.rooms[room_id].remove(connection)
 
 
 if __name__ == "__main__":
-    ChatServer()
+    ip_address = "127.0.0.1"
+    port = 12345
+
+    s = Server()
+    s.accept_connections(ip_address, port)

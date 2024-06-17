@@ -5,9 +5,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ATACAR COORDINATE DEFENDERcommand : action COORDINATEaction : ATACAR\n              | DEFENDER'
+_lr_signature = 'ATACAR COMENZAR COORDINATE DEFENDERcommand : action COORDINATE\n               | COMENZARaction : ATACAR\n              | DEFENDER'
     
-_lr_action_items = {'ATACAR':([0,],[3,]),'DEFENDER':([0,],[4,]),'$end':([1,5,],[0,-1,]),'COORDINATE':([2,3,4,],[5,-2,-3,]),}
+_lr_action_items = {'COMENZAR':([0,],[3,]),'ATACAR':([0,],[4,]),'DEFENDER':([0,],[5,]),'$end':([1,3,6,],[0,-2,-1,]),'COORDINATE':([2,4,5,],[6,-3,-4,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -26,7 +26,8 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> command","S'",1,None,None,None),
-  ('command -> action COORDINATE','command',2,'p_command','main.py',23),
-  ('action -> ATACAR','action',1,'p_action','main.py',27),
-  ('action -> DEFENDER','action',1,'p_action','main.py',28),
+  ('command -> action COORDINATE','command',2,'p_command','client_GUI.py',34),
+  ('command -> COMENZAR','command',1,'p_command','client_GUI.py',35),
+  ('action -> ATACAR','action',1,'p_action','client_GUI.py',39),
+  ('action -> DEFENDER','action',1,'p_action','client_GUI.py',40),
 ]
