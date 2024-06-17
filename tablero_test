@@ -5,6 +5,8 @@ import csv
 import shutil
 import ply.lex as lex
 import ply.yacc as yacc
+from tkinter import PhotoImage
+from PIL import Image, ImageTk
 
 tab_original = "tablero.csv"
 tabl_duplicado = "copia.csv"
@@ -49,6 +51,9 @@ class BoardGUI:
         self.canvas = tk.Canvas(self.root, width=440, height=440)  # Ajustar el tamaño del canvas
         self.canvas.pack()
         self.board = self.load_board_from_csv(csv_file)
+        self.images = {
+            'marked': self.resize_image(Image.open('ship1.png'))  # Ruta de la imagen para casillas marcadas
+        }
         self.draw_board()
 
     def load_board_from_csv(self, filename):
@@ -60,6 +65,11 @@ class BoardGUI:
                 coord, state = row
                 board[coord] = int(state)
         return board
+    
+    def resize_image(self, img):
+        cell_width = 40
+        cell_height = 40
+        return ImageTk.PhotoImage(img.resize((cell_width, cell_height)))
 
     def draw_board(self):
         cell_width = 40
@@ -68,11 +78,11 @@ class BoardGUI:
 
         # Dibujar letras de filas
         for i in range(10):
-            self.canvas.create_text(offset // 2, i * cell_height + cell_height // 2 + offset, text=chr(65 + i), fill='black', font=('Arial black', 10))
+            self.canvas.create_text(offset // 2, i * cell_height + cell_height // 2 + offset, text=str(i + 1), fill='black', font=('Arial black', 10))
 
         # Dibujar números de columnas
         for j in range(10):
-            self.canvas.create_text(j * cell_width + cell_width // 2 + offset, offset // 2, text=str(j + 1), fill='black', font=('Arial black', 10))
+            self.canvas.create_text(j * cell_width + cell_width // 2 + offset, offset // 2, text=chr(65 + j), fill='black', font=('Arial black', 10))
 
         # Dibujar el tablero
         for i in range(10):
@@ -81,9 +91,9 @@ class BoardGUI:
                 x0, y0 = j * cell_width + offset, i * cell_height + offset
                 x1, y1 = x0 + cell_width, y0 + cell_height
                 if coord in self.board and self.board[coord] == 1:
-                    self.canvas.create_rectangle(x0, y0, x1, y1, fill='yellow')
+                    self.canvas.create_image(x0, y0, anchor=tk.NW, image=self.images['marked'])
                 else:
-                    self.canvas.create_rectangle(x0, y0, x1, y1, fill='blue')
+                    self.canvas.create_rectangle(x0, y0, x1, y1, fill='DodgerBlue2')
 
 # Crear la ventana principal
 window = tk.Tk()

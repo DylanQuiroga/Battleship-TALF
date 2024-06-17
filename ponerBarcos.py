@@ -69,7 +69,8 @@ class GUI:
         for i in range(10):
             for j in range(10):
                 coord = chr(65 + j) + str(i + 1)
-                button = tk.Button(self.root, height=2, width=4)
+                button_text = chr(65 + j) + str(i + 1)  # Coordenada como texto del botón
+                button = tk.Button(self.root, text=button_text, height=2, width=4)
                 button.grid(row=i, column=j)
                 button.config(command=lambda button=button, coord=coord: self.on_button_click(button, coord))
                 self.board.button_states[coord] = 0
@@ -104,7 +105,6 @@ class GUI:
             self.board.button_states[coord] = 0
     
     def valid_ships(self, marked_cells):
-        
         #funcion para validar si las celdas marcadas estan en vertical y horizontal
         def is_linear(cells):
             rows = sorted(int(cell[1:]) for cell in cells)
@@ -133,6 +133,7 @@ class GUI:
                         stack.extend(get_neighbors(current))
                 if len(current_ship) not in [1, 2, 3] or not is_linear(current_ship):
                     return False
+            
         return True
 
     def save_board(self):
