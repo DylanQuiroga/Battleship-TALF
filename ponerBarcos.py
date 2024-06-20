@@ -43,13 +43,18 @@ class Board:
 
     def place_ships(self):
         self.clear_board()
-        for size in [4, 3, 3, 2, 1, 1, 1, 1]:  # ship sizes
+        for size in [4, 3, 3, 2, 1, 1, 1, 1]:  # Actualizar tamaños de barcos según los requisitos
             ship_coords = self.generate_ship(size)
-            self.ships.append(ship_coords)
-            for coord in ship_coords:
-                button = self.buttons[coord]
-                button.config(bg='yellow')
-                self.button_states[coord] = 1
+            if ship_coords:  # Verificar si se generó el barco correctamente
+                self.ships.append(ship_coords)
+                for coord in ship_coords:
+                    button = self.buttons[coord]
+                    button.config(bg='yellow')
+                    self.button_states[coord] = 1
+            else:
+                print(f"No se pudo colocar un barco de tamaño {size}. Intentando de nuevo.")
+                self.place_ships()  # Intentar colocar los barcos de nuevo si falla
+                break
 
     def save_board_state(self, filename):
         with open(filename, 'w', newline='') as file:
