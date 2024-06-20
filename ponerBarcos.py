@@ -43,7 +43,7 @@ class Board:
 
     def place_ships(self):
         self.clear_board()
-        for size in [3, 3, 2, 2, 1, 1, 1, 1]:  # ship sizes
+        for size in [4, 3, 3, 2, 1, 1, 1, 1]:  # ship sizes
             ship_coords = self.generate_ship(size)
             self.ships.append(ship_coords)
             for coord in ship_coords:
