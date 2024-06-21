@@ -1,6 +1,8 @@
+import os
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
+import webbrowser
 
 class BattleshipMenu:
     def __init__(self):
@@ -46,19 +48,9 @@ class BattleshipMenu:
 
     def show_instructions(self):
         if self.instructions_window is None:
-            self.instructions_window = tk.Toplevel(self.window)
-            self.instructions_window.title("Instrucciones")
-            self.instructions_window.geometry("300x200")
-
-            instructions_label = tk.Label(self.instructions_window, text="Instrucciones del Juego", font=("Helvetica", 14))
-            instructions_label.pack(pady=10)
-
-            instructions_text = "Aqui se escribe las instrucciones del juego"
-            instructions_text_label = tk.Label(self.instructions_window, text=instructions_text)
-            instructions_text_label.pack(pady=10)
-
-            close_button = tk.Button(self.instructions_window, text="Close", command=self.close_instructions)
-            close_button.pack(pady=10)
+            archivo_html = "instrucciones/index.html"
+            abs_path = os.path.abspath(archivo_html)
+            webbrowser.open(f"file://{abs_path}")
 
     def close_instructions(self):
         if self.instructions_window is not None:
