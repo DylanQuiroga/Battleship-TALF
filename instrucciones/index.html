@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Página Simple</title>
+    <title>Instrucciones</title>
     
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -13,7 +13,7 @@
         Para empezar, necesitarás saber que los barcos se encuentran despegados en el mar en un tablero de 10x10, el cual está distribuido de la siguiente manera:<br>
     </p>
     <div class="image1">
-        <img src="image1.png" alt="Tablero de 10x10">
+        <img src="imagenes/image1.png" alt="Tablero de 10x10">
     </div>
     <p> Este mapa del tablero será tu mejor amiga, ya que te ayudará a visualizar donde se encuentran los barcos, ya sean tuyos o del enemigo. <br>
         Las letras representan las columnas y los números las filas. <br>
@@ -25,5 +25,87 @@
         Antes de entrar al combate necesitarás posicionar tus barcos en el campo de batalla, para eso, necesitaras abrir la opción 'Poner barcos' del menú de opciones.<br>
         Una vez ahi, te encontrarás con lo siguiente: <br>
     </p>
+    <div class="image2">
+        <img src="imagenes/image2.png" alt="Posiciona tus barcos">
+    </div>
+    <p>
+        En este menú podrás posicionar tus barcos en el tablero, para hacerlo tendrás una casilla, esta cambiará de color a amarillo diciendo que hay un barco ahi. <br>
+        Tendrás que darle tamaño a tu barco marcando otra casilla que esté al lado de otra casilla marcada. <br>
+    </p>
+    <div class="image-gallery" id="gallery">
+        <div class="image-item" id="imagen 1">
+            <img src="imagenes/image3.png" alt="Posiciona tus barcos">
+            <p>Un barco de tamaño 1</p>
+        </div>
+        <div class="image-item" id="imagen 2">
+            <img src="imagenes/image4.png" alt="Posiciona tus barcos">
+            <p>Dos barco de tamaño 1</p>
+        </div>
+        <div class="image-item" id="imagen 3">
+            <img src="imagenes/image5.png" alt="Posiciona tus barcos">
+            <p>Un barco de tamaño 3</p>
+        </div>
+    </div>
+    <p>
+        Puedes poner tus barcos de manera manual o automatico con el botón de 'Aleatorio', si lo haces de manera automatica, el sistema pondrá tus barcos de manera aleatoria en el tablero. <br>
+        Ademas puedes poner tus barcos en cualquier dirección, ya sea horizontal o vertical, pero no en diagonal. <br>
+        Ten en cuenta que los barcos no pueden estar apegados entre si, siempre tiene que haber un espacio entre ellos. <br>
+    </p>
+    <div class="image-valid" id="gallery">
+        <div class="image-item" id="imagen 1">
+            <img src="imagenes/image6.png" alt="Posiciona tus barcos">
+            <p style="color: rgb(128, 255, 0);">Valido</p>
+        </div>
+        <div class="image-item" id="imagen 2">
+            <img src="imagenes/image7.png" alt="Posiciona tus barcos">
+            <p style="color: rgb(255, 0, 0);">No valido</p>
+        </div>
+    </div>
+    <p>
+        Si quieres desmarcar una casilla, simplemente vuelve a darle click y se desmarcará. <br>
+        Ten en cuenta que tendras al mando los siguientes barcos, y debes ponerlos todos: <br>
+    </p>
+    <div class="lista">
+        <ul>
+            <li>Un barco portaviones de tamaño 4</li>
+            <li>Dos barcos acorazados de tamaño 3</li>
+            <li>Un barco destructor de tamaño 2</li>
+            <li>Cuatro barcos fragata de tamaño 1</li>
+        </ul>
+    </div>
+    <div class="image8">
+        <img src="imagenes/image8.png" alt="Posicion de barcos">
+    </div>
+    <p>
+        Una vez que hayas posicionado tus barcos tendrás que apretar el botón de 'Guardar', la posición de tus barcos está guardada en un formato de archivo llamado Cifrado Sin Vulneraciones (.csv). <br><br><br><br><br><br>
+    </p>
+    <h1>Antes de combatir...</h1>
+    <p>
+        Antes de combatir, necesitarás saber que tienes que saber estas dos cosas: <br>
+    </p>
+    <div class="lista">
+        <ul>
+            <li>Necesitas ejecutar el modo servidor para jugar</li>
+            <li>Tienes que estar conectado a internet</li>
+        </ul>
+    </div>
+    <h1>A combatir</h1>
+    <p>
+        Primero escoge tu bando, soldado. Tienes las siguientes opciones: <br>
+    </p>
+    <div class="asd">
+        <div class="image-bando" id="gallery">
+            <div class="image-item1" id="imagen">
+                <img src="imagenes/Aliados.png" alt="Foto aliados">
+                <p>Aliados</p>
+            </div>
+            <div class="image-item1" id="imagen">
+                <img src="imagenes/Potencia del eje.png" alt="Foto Potencias del eje">
+                <p>Potencias del Eje</p>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
 </body>
 </html>

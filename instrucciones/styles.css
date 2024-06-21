@@ -9,7 +9,7 @@ body {
     font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
-    background-image: url('fondo.jpg');
+    background-image: url('imagenes/fondo.jpg');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -30,9 +30,65 @@ p {
     margin-bottom: 40px;
 }
 
+.image2 {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}	
+
 img {
     max-width: 100%;
     height: auto;
     display: flex;
 
+}
+
+.image-gallery {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.image-valid {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 40px;
+}
+
+.lista {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    color: rgb(255, 255, 255);
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.image8 {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+}
+
+.image-bando {
+    display: flex;
+    justify-content: center;
+    margin-top: 40px;
+    margin-bottom: 40px;
+    gap: 200px;
+    width: 60%;
+    align-items: center;
+    
+}
+
+.asd {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 40px;
+    gap: 40px;
+    align-items: center;
 }
