@@ -9,6 +9,7 @@ class Board:
         self.ships = []
         self.buttons = {}
         self.ship_counts = {4: 0, 3: 0, 2: 0, 1: 0}
+        self.max_ships = {4: 1, 3: 2, 2: 1, 1: 4}
 
     def generate_ship(self, size):
         while True:
@@ -72,6 +73,7 @@ class GUI:
         self.board = board
         self.create_board_buttons()
         self.create_buttons()
+        self.create_ship_tracker()
 
     def create_board_buttons(self):
         for i in range(10):
@@ -94,8 +96,29 @@ class GUI:
         random_button = tk.Button(button_frame, text="Aleatorio", command=self.place_random_ships)
         random_button.pack(side=tk.LEFT, padx=5)
 
-        clear_button = tk.Button(button_frame, text="Limpiar", command=self.board.clear_board)
+        clear_button = tk.Button(button_frame, text="Limpiar", command=self.clear_board_and_update)
         clear_button.pack(side=tk.LEFT, padx=5)
+
+    def create_ship_tracker(self):
+        self.ship_tracker_frame = tk.Frame(self.root)
+        self.ship_tracker_frame.grid(row=12, column=0, columnspan=10, pady=10)
+        self.ship_tracker_label = tk.Label(self.ship_tracker_frame, text=self.get_ship_tracker_text(), justify=tk.LEFT)
+        self.ship_tracker_label.pack()
+
+    def get_ship_tracker_text(self):
+        return f"""
+        Portaviones (4 casillas): {self.board.max_ships[4] - self.board.ship_counts[4]}
+        Acorazado (3 casillas): {self.board.max_ships[3] - self.board.ship_counts[3]}
+        Destructor (2 casillas): {self.board.max_ships[2] - self.board.ship_counts[2]}
+        Fragata (1 casilla): {self.board.max_ships[1] - self.board.ship_counts[1]}
+        """
+
+    def update_ship_tracker(self):
+        self.ship_tracker_label.config(text=self.get_ship_tracker_text())
+
+    def clear_board_and_update(self):
+        self.board.clear_board()
+        self.update_ship_tracker()
 
     def on_button_click(self, button, coord):
         if button.cget('bg') == 'yellow':
@@ -111,6 +134,8 @@ class GUI:
             messagebox.showwarning("Advertencia", "¡Las casillas marcadas no forman barcos válidos o exceden el límite permitido!")
             button.config(bg='SystemButtonFace')
             self.board.button_states[coord] = 0
+
+        self.update_ship_tracker()
     
     def valid_ships(self, marked_cells):
         def is_linear(cells):
@@ -143,7 +168,7 @@ class GUI:
                     return False
                 
                 new_ship_counts[len(current_ship)] += 1
-                if new_ship_counts[len(current_ship)] > {4: 1, 3: 2, 2: 1, 1: 4}[len(current_ship)]:
+                if new_ship_counts[len(current_ship)] > self.board.max_ships[len(current_ship)]:
                     return False
         
         self.board.ship_counts = new_ship_counts
@@ -155,6 +180,7 @@ class GUI:
 
     def place_random_ships(self):
         self.board.place_ships()
+        self.update_ship_tracker()
 
 def main():
     window = tk.Tk()
