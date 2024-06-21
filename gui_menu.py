@@ -1,7 +1,9 @@
 import os
+import subprocess
 import tkinter as tk
-from tkinter import ttk
+from tkinter import PhotoImage, ttk
 from PIL import Image, ImageTk
+from subprocess import Popen, PIPE
 import webbrowser
 
 class BattleshipMenu:
@@ -29,6 +31,9 @@ class BattleshipMenu:
         self.play_player_button = tk.Button(self.window, text="Jugar contra jugador", command=self.play_player)
         self.play_player_button.pack(pady=10)
 
+        self.generate_board_button = tk.Button(self.window, text="Generar tablero", command=self.open_poner_barcos)
+        self.generate_board_button.pack(pady=10)
+
         self.instructions_button = tk.Button(self.window, text="Instrucciones", command=self.show_instructions)
         self.instructions_button.pack(pady=10)
 
@@ -42,10 +47,6 @@ class BattleshipMenu:
         # Add code to start playing against the machine
         print("Playing against the machine.")
 
-    def play_player(self):
-        # Add code to start playing against another player
-        print("Playing against another player.")
-
     def show_instructions(self):
         if self.instructions_window is None:
             archivo_html = "instrucciones/index.html"
@@ -56,6 +57,69 @@ class BattleshipMenu:
         if self.instructions_window is not None:
             self.instructions_window.destroy()
             self.instructions_window = None
+
+    def open_poner_barcos(self):
+        # Asegúrate de que el path al script sea correcto. Puede necesitar ajustes.
+        subprocess.Popen(['python', 'ponerBarcos.py'])
+
+    def play_player(self):
+        # Crear una nueva ventana
+        self.player_choice_window = tk.Toplevel(self.window)
+        self.player_choice_window.title("Bandos")
+    
+        # Configurar el tamaño de la ventana si es necesario
+        self.player_choice_window.geometry('500x300')
+
+        title_label = tk.Label(self.player_choice_window, text="Escoge tu bando", font=("Arial", 20))
+        title_label.pack(pady=(10,20))
+
+        allies_image_raw = PhotoImage(file="Aliados.png")
+        axis_image_raw = PhotoImage(file="Potencia del eje.png")
+
+        # Ajustar el tamaño de las imágenes (ejemplo: zoom x2, subsample x4)
+        self.allies_image = allies_image_raw.zoom(2, 2).subsample(20, 20)
+        self.axis_image = axis_image_raw.zoom(2, 2).subsample(20, 20)
+
+        self.buttons_frame = tk.Frame(self.player_choice_window)
+        self.buttons_frame.pack()
+
+        allies_frame = tk.Frame(self.buttons_frame)
+        allies_frame.pack(side=tk.LEFT, padx=(10,20))
+
+        # Crear y empaquetar la etiqueta "Aliados" en el Frame de los Aliados, asegurándose de que esté en la parte superior
+        allies_label = tk.Label(allies_frame, text="Aliados", font=("Arial", 10))
+        allies_label.pack(side=tk.TOP)
+
+        # Crear y empaquetar el botón de los Aliados en el mismo Frame, debajo de la etiqueta
+        allies_button = tk.Button(allies_frame, image=self.allies_image, command=self.choose_allies)
+        allies_button.pack(side=tk.TOP)
+
+        # Repetir el proceso para las Potencias del Eje
+
+        # Crear un Frame para las Potencias del Eje
+        axis_frame = tk.Frame(self.buttons_frame)
+        axis_frame.pack(side=tk.LEFT, padx=(10,20))
+
+        # Crear y empaquetar la etiqueta "Potencias del Eje" en el Frame de las Potencias del Eje, asegurándose de que esté en la parte superior
+        axis_label = tk.Label(axis_frame, text="Potencias del Eje", font=("Arial", 10))
+        axis_label.pack(side=tk.TOP)
+
+        # Crear y empaquetar el botón de las Potencias del Eje en el mismo Frame, debajo de la etiqueta
+        axis_button = tk.Button(axis_frame, image=self.axis_image, command=self.choose_axis)
+        axis_button.pack(side=tk.TOP)
+    
+    
+    def choose_allies(self):
+        # Cerrar la ventana actual
+        self.player_choice_window.destroy()
+        # Abrir la ventana de los Aliados
+        subprocess.Popen(['python', 'client_GUI_Aliados.py'])
+    
+    def choose_axis(self):
+        # Cerrar la ventana actual
+        self.player_choice_window.destroy()
+        # Abrir la ventana de las Potencias del Eje
+        subprocess.Popen(['python', 'client_GUI_PdE.py'])
 
     def run(self):
         self.window.mainloop()
