@@ -8,6 +8,7 @@ class Board:
         self.button_states = {}
         self.ships = []
         self.buttons = {}
+        self.ship_counts = {4: 0, 3: 0, 2: 0, 1: 0}
 
     def generate_ship(self, size):
         while True:
@@ -40,6 +41,7 @@ class Board:
         for coord in self.button_states.keys():
             self.button_states[coord] = 0
         self.ships.clear()
+        self.ship_counts = {4: 0, 3: 0, 2: 0, 1: 0}
 
     def place_ships(self):
         self.clear_board()
@@ -51,6 +53,7 @@ class Board:
                     button = self.buttons[coord]
                     button.config(bg='yellow')
                     self.button_states[coord] = 1
+                self.ship_counts[size] += 1
             else:
                 print(f"No se pudo colocar un barco de tamaño {size}. Intentando de nuevo.")
                 self.place_ships()  # Intentar colocar los barcos de nuevo si falla
@@ -105,12 +108,11 @@ class GUI:
         # Validar la cantidad de casillas marcadas y la secuencia
         marked_cells = [coord for coord, state in self.board.button_states.items() if state == 1]
         if not self.valid_ships(marked_cells):
-            messagebox.showwarning("Advertencia", "¡Las casillas marcadas no forman barcos válidos!")
+            messagebox.showwarning("Advertencia", "¡Las casillas marcadas no forman barcos válidos o exceden el límite permitido!")
             button.config(bg='SystemButtonFace')
             self.board.button_states[coord] = 0
     
     def valid_ships(self, marked_cells):
-        #funcion para validar si las celdas marcadas estan en vertical y horizontal
         def is_linear(cells):
             rows = sorted(int(cell[1:]) for cell in cells)
             cols = sorted(ord(cell[0]) for cell in cells)
@@ -126,6 +128,7 @@ class GUI:
             return [n for n in neighbors if n in marked_cells]
 
         visited = set()
+        new_ship_counts = {4: 0, 3: 0, 2: 0, 1: 0}
         for cell in marked_cells:
             if cell not in visited:
                 stack = [cell]
@@ -136,9 +139,14 @@ class GUI:
                         visited.add(current)
                         current_ship.append(current)
                         stack.extend(get_neighbors(current))
-                if len(current_ship) not in [1, 2, 3] or not is_linear(current_ship):
+                if len(current_ship) not in [1, 2, 3, 4] or not is_linear(current_ship):
                     return False
-            
+                
+                new_ship_counts[len(current_ship)] += 1
+                if new_ship_counts[len(current_ship)] > {4: 1, 3: 2, 2: 1, 1: 4}[len(current_ship)]:
+                    return False
+        
+        self.board.ship_counts = new_ship_counts
         return True
 
     def save_board(self):
