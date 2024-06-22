@@ -110,7 +110,7 @@ def update_mongo_document():
         # Conectar a la base de datos MongoDB
         client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
         db = client['battleship']
-        collection = db['Potencias del eje']
+        collection = db['Potencia del eje']
 
         # Generar el nuevo campo "tablero"
         tablero = [{"coord": k, "state": v} for k, v in data.items()]
@@ -190,7 +190,7 @@ def defender_coordenada(coord):
     # Conectar a la base de datos MongoDB
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
     db = client['battleship']
-    collection = db['Potencias del eje']
+    collection = db['Potencia del eje']
 
     document = collection.find_one(filter_criteria)
     if not document:
@@ -348,7 +348,7 @@ class GUI:
         client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
         db = client['battleship']
         
-        collection_user = db['Potencias del eje']
+        collection_user = db['Potencia del eje']
         document_user = collection_user.find_one(filter_criteria_user)
         if document_user:
             tablero_user = document_user.get("tablero", [])
