@@ -274,7 +274,7 @@ class Board:
         if "Barco en posición de defensa" in result:
             button.config(bg='green')
 
-    def update_board(self, board_data):
+    def update_board(self, board_data, update_enemy=False):
         for item in board_data:
             coord = item['coord']
             state = item['state']
@@ -287,7 +287,8 @@ class Board:
                 elif state == 2:
                     button.config(bg='green')
                 elif state == 0:
-                    button.config(bg='blue')
+                    if not self.is_enemy:
+                        button.config(bg='blue')
 
 class GUI:
     def __init__(self):
@@ -343,7 +344,6 @@ class GUI:
 
     def load_boards(self):
         filter_criteria_user = {"codigo": "123456789"}
-        filter_criteria_enemy = {"codigo": "987654321"}
         
         client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
         db = client['battleship']
@@ -354,12 +354,6 @@ class GUI:
             tablero_user = document_user.get("tablero", [])
             self.user_board.update_board(tablero_user)
         
-        collection_enemy = db['Potencia del eje']
-        document_enemy = collection_enemy.find_one(filter_criteria_enemy)
-        if document_enemy:
-            tablero_enemy = document_enemy.get("tablero", [])
-            self.enemy_board.update_board(tablero_enemy)
-
         client.close()
 
     def save_conversation(self):
