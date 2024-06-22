@@ -69,7 +69,6 @@ def analizarMensaje(resultado):
                 print("datos cargados correctamente 1")
             if valor:
                 print("datos cargados correctamente 2")
-            return "Juego comenzado, tableros cargados."
 
         elif t_ATACAR == resultado[0]:
             coord = resultado[1]
@@ -127,7 +126,7 @@ def update_mongo_document():
         return False
 
 def atacar_coordenada(coord):
-    filter_criteria = {"codigo": "987654321"}
+    filter_criteria = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
     db = client['battleship']
@@ -173,7 +172,7 @@ def atacar_coordenada(coord):
         elif coord_state == 2:
             if random.random() < 0.5:
                 data[coord] = -1
-                message = "¡Impacto en un barco en posición de defensa!"
+                message = "¡Impacto en un barco en posición de defenza!"
             else:
                 message = "El misil ha fallado"
 
@@ -186,7 +185,7 @@ def atacar_coordenada(coord):
 
 
 def defender_coordenada(coord):
-    filter_criteria = {"codigo": "123456789"}
+    filter_criteria = {"codigo": "987654321"}
     # Conectar a la base de datos MongoDB
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
     db = client['battleship']
@@ -234,149 +233,262 @@ def defender_coordenada(coord):
     
     return str(message)
 
-class Board:
-    def __init__(self, root, is_enemy=False):
-        self.root = root
-        self.is_enemy = is_enemy
-        self.buttons = {}
-        self.create_board_buttons()
-
-    def create_board_buttons(self):
-        for i in range(10):
-            for j in range(10):
-                coord = chr(65 + j) + str(i + 1)
-                button = tk.Button(self.root, text=coord, height=2, width=4, command=lambda coord=coord: self.on_button_click(coord))
-                button.grid(row=i, column=j)
-                self.buttons[coord] = button
-
-    def on_button_click(self, coord):
-        if self.is_enemy:
-            self.attack(coord)
-        else:
-            self.defend(coord)
-
-    def attack(self, coord):
-        print(f"Atacando {coord}")
-        result = atacar_coordenada(coord)
-        button = self.buttons[coord]
-        if "Agua" in result:
-            button.config(bg='blue')
-        elif "¡Impacto en un barco!" in result or "¡Impacto en un barco en posición de defensa!" in result:
-            button.config(bg='red')
-        elif "Ya habías impactado este barco antes" in result:
-            button.config(bg='purple')  # Optional, if you want a different color for already hit spots
-        print(result)
-
-    def defend(self, coord):
-        print(f"Defendiendo {coord}")
-        result = defender_coordenada(coord)
-        button = self.buttons[coord]
-        if "Barco en posición de defensa" in result:
-            button.config(bg='green')
-
-    def update_board(self, board_data):
-        for item in board_data:
-            coord = item['coord']
-            state = item['state']
-            button = self.buttons.get(coord)
-            if button:
-                if state == 1:
-                    button.config(bg='yellow')
-                elif state == -1:
-                    button.config(bg='red')
-                elif state == 2:
-                    button.config(bg='green')
-                elif state == 0:
-                    button.config(bg='blue')
-
 class GUI:
-    def __init__(self):
-        self.window = tk.Tk()
-        self.window.title("Chat Cliente-Servidor")
-        self._setup_main_window()
+    
+    def __init__(self, ip_address, port):
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.connect((ip_address, port))
 
-    def _setup_main_window(self):
-        self.text_widget = tk.Text(self.window, width=100, height=15)
-        self.text_widget.pack(padx=10, pady=10)
+        self.Window = tk.Tk()
+        self.Window.withdraw()
+
+        self.login = tk.Toplevel()
+
+        self.login.title("Login")
+        self.login.resizable(width=False, height=False)
+        self.login.configure(width=400, height=350)
+
+        self.pls = tk.Label(self.login, 
+                            text="Please Login to a chatroom", 
+                            justify=tk.CENTER,
+                            font="Helvetica 12 bold")
+
+        self.pls.place(relheight=0.15, relx=0.2, rely=0.07)
+
+        self.userLabelName = tk.Label(self.login, text="Username: ", font="Helvetica 11")
+        self.userLabelName.place(relheight=0.2, relx=0.1, rely=0.25)
+
+        self.userEntryName = tk.Entry(self.login, font="Helvetica 12")
+        self.userEntryName.place(relwidth=0.4 ,relheight=0.1, relx=0.35, rely=0.30)
+        self.userEntryName.focus()
+
+        self.roomLabelName = tk.Label(self.login, text="Room Id: ", font="Helvetica 12")
+        self.roomLabelName.place(relheight=0.2, relx=0.1, rely=0.40)
+
+        self.roomEntryName = tk.Entry(self.login, font="Helvetica 11", show="*")
+        self.roomEntryName.place(relwidth=0.4 ,relheight=0.1, relx=0.35, rely=0.45)
         
-        self.entry = tk.Entry(self.window, width=100)
-        self.entry.pack(padx=10, pady=10)
-        self.entry.bind("<Return>", self._on_enter_pressed)
+        self.go = tk.Button(self.login, 
+                            text="CONTINUE", 
+                            font="Helvetica 12 bold", 
+                            command = lambda: self.goAhead(self.userEntryName.get(), self.roomEntryName.get()))
         
-        self.send_button = tk.Button(self.window, text="Enviar", command=self._on_enter_pressed)
-        self.send_button.pack(pady=5)
+        self.go.place(relx=0.35, rely=0.62)
+
+        self.Window.mainloop()
+
+
+    def goAhead(self, username, room_id=0):
+        self.name = username
+        self.server.send(str.encode(username))
+        time.sleep(0.1)
+        self.server.send(str.encode(room_id))
         
-        self.save_button = tk.Button(self.window, text="Guardar Conversación", command=self.save_conversation)
-        self.save_button.pack(pady=5)
+        self.login.destroy()
+        self.layout()
 
-        self.client = Client(self.text_widget)
+        rcv = threading.Thread(target=self.receive) 
+        rcv.start()
 
-        self.board_frame_user = tk.LabelFrame(self.window, text="Tablero Aliado")
-        self.board_frame_user.pack(side="left", padx=20, pady=20)
 
-        self.board_frame_enemy = tk.LabelFrame(self.window, text="Tablero Enemigo")
-        self.board_frame_enemy.pack(side="right", padx=20, pady=20)
+    def layout(self):
+        self.Window.deiconify()
+        self.Window.title("CHATROOM")
+        self.Window.resizable(width=False, height=False)
+        self.Window.configure(width=470, height=550, bg="#17202A")
+        self.chatBoxHead = tk.Label(self.Window, 
+                                    bg = "#17202A", 
+                                    fg = "#EAECEE", 
+                                    text = self.name , 
+                                    font = "Helvetica 11 bold", 
+                                    pady = 5)
 
-        self.user_board = Board(self.board_frame_user)
-        self.enemy_board = Board(self.board_frame_enemy, is_enemy=True)
+        self.chatBoxHead.place(relwidth = 1)
 
-    def _on_enter_pressed(self, event=None):
-        msg = self.entry.get()
-        self._insert_message(msg, "Yo")
+        self.line = tk.Label(self.Window, width = 450, bg = "#ABB2B9") 
+		
+        self.line.place(relwidth = 1, rely = 0.07, relheight = 0.012) 
+		
+        self.textCons = tk.Text(self.Window, 
+                                width=20, 
+                                height=2, 
+                                bg="#17202A", 
+                                fg="#EAECEE", 
+                                font="Helvetica 11", 
+                                padx=5, 
+                                pady=5) 
+		
+        self.textCons.place(relheight=0.745, relwidth=1, rely=0.08) 
+		
+        self.labelBottom = tk.Label(self.Window, bg="#ABB2B9", height=80) 
+		
+        self.labelBottom.place(relwidth = 1, 
+							    rely = 0.8) 
+		
+        self.entryMsg = tk.Entry(self.labelBottom, 
+                                bg = "#2C3E50", 
+                                fg = "#EAECEE", 
+                                font = "Helvetica 11")
+        self.entryMsg.place(relwidth = 0.74, 
+							relheight = 0.03, 
+							rely = 0.008, 
+							relx = 0.011) 
+        self.entryMsg.focus()
 
-    def _insert_message(self, msg, sender):
-        if not msg:
-            return
+        self.buttonMsg = tk.Button(self.labelBottom, 
+								text = "Send", 
+								font = "Helvetica 10 bold", 
+								width = 20, 
+								bg = "#ABB2B9", 
+								command = lambda : self.sendButton(self.entryMsg.get())) 
+        self.buttonMsg.place(relx = 0.77, 
+							rely = 0.008, 
+							relheight = 0.03, 
+							relwidth = 0.22) 
+
+
+        self.labelFile = tk.Label(self.Window, bg="#ABB2B9", height=70) 
+		
+        self.labelFile.place(relwidth = 1, 
+							    rely = 0.9) 
+		
+        self.fileLocation = tk.Label(self.labelFile, 
+                                text = "Choose file to send",
+                                bg = "#2C3E50", 
+                                fg = "#EAECEE", 
+                                font = "Helvetica 11")
+        self.fileLocation.place(relwidth = 0.65, 
+                                relheight = 0.03, 
+                                rely = 0.008, 
+                                relx = 0.011) 
+
+        self.browse = tk.Button(self.labelFile, 
+								text = "Browse", 
+								font = "Helvetica 10 bold", 
+								width = 13, 
+								bg = "#ABB2B9", 
+								command = self.browseFile)
+        self.browse.place(relx = 0.67, 
+							rely = 0.008, 
+							relheight = 0.03, 
+							relwidth = 0.15) 
+
+        self.sengFileBtn = tk.Button(self.labelFile, 
+								text = "Send", 
+								font = "Helvetica 10 bold", 
+								width = 13, 
+								bg = "#ABB2B9", 
+								command = self.sendFile)
+        self.sengFileBtn.place(relx = 0.84, 
+							rely = 0.008, 
+							relheight = 0.03, 
+							relwidth = 0.15)
+    
+
+        self.textCons.config(cursor = "arrow")
+        scrollbar = tk.Scrollbar(self.textCons) 
+        scrollbar.place(relheight = 1, 
+						relx = 0.974)
+
+        scrollbar.config(command = self.textCons.yview)
+        self.textCons.config(state = tk.DISABLED)
+
+
+    def browseFile(self):
+        self.filename = filedialog.askopenfilename(initialdir="/", 
+                                    title="Select a file",
+                                    filetypes = (("Comma-separated values", 
+                                                "*.csv*"), 
+                                                ("all files", 
+                                                "*.*")))
+        self.fileLocation.configure(text="File Opened: "+ self.filename)
+
+
+    def sendFile(self):
+        self.server.send("FILE".encode())
+        time.sleep(0.1)
+        self.server.send(str("client_" + os.path.basename(self.filename)).encode())
+        time.sleep(0.1)
+        self.server.send(str(os.path.getsize(self.filename)).encode())
+        time.sleep(0.1)
+
+        file = open(self.filename, "rb")
+        data = file.read(1024)
+        while data:
+            self.server.send(data)
+            data = file.read(1024)
+        self.textCons.config(state=tk.DISABLED)
+        self.textCons.config(state = tk.NORMAL)
+        self.textCons.insert(tk.END, "<You> "
+                                     + str(os.path.basename(self.filename)) 
+                                     + " Sent\n\n")
+        self.textCons.config(state = tk.DISABLED) 
+        self.textCons.see(tk.END)
+
+
+    def sendButton(self, msg):
+        self.textCons.config(state = tk.DISABLED) 
+        self.msg=msg 
+        self.entryMsg.delete(0, tk.END) 
+        snd= threading.Thread(target = self.sendMessage) 
+        snd.start() 
+
+
+    def receive(self):
+        while True:
+            try:
+                message = self.server.recv(1024).decode()
+
+                if str(message) == "FILE":
+                    file_name = self.server.recv(1024).decode()
+                    lenOfFile = self.server.recv(1024).decode()
+                    send_user = self.server.recv(1024).decode()
+
+                    if os.path.exists(file_name):
+                        os.remove(file_name)
+
+                    total = 0
+                    with open(file_name, 'wb') as file:
+                        while str(total) != lenOfFile:
+                            data = self.server.recv(1024)
+                            total = total + len(data)     
+                            file.write(data)
+                    
+                    self.textCons.config(state=tk.DISABLED)
+                    self.textCons.config(state = tk.NORMAL)
+                    self.textCons.insert(tk.END, "<" + str(send_user) + "> " + file_name + " Received\n\n")
+                    self.textCons.config(state = tk.DISABLED) 
+                    self.textCons.see(tk.END)
+
+                else:
+                    self.textCons.config(state=tk.DISABLED)
+                    self.textCons.config(state = tk.NORMAL)
+                    self.textCons.insert(tk.END, 
+                                    message+"\n\n") 
+
+                    self.textCons.config(state = tk.DISABLED) 
+                    self.textCons.see(tk.END)
+
+            except: 
+                print("An error occured!") 
+                self.server.close() 
+                break
+
+    def sendMessage(self):
+        self.textCons.config(state=tk.DISABLED) 
+        mensaje = analisis(self.msg)
         
-        self.entry.delete(0, tk.END)
-        self.text_widget.configure(state=tk.NORMAL)
-        self.text_widget.insert(tk.END, f"{sender}: {msg}\n")
-        self.text_widget.configure(state=tk.DISABLED)
-
-        response = self.client.send_message(msg)
-        self.text_widget.configure(state=tk.NORMAL)
-        self.text_widget.insert(tk.END, f"Servidor: {response}\n")
-        self.text_widget.configure(state=tk.DISABLED)
-
-        if "Juego comenzado" in response:
-            self.load_boards()
-
-    def load_boards(self):
-        filter_criteria_enemy = {"codigo": "123456789"}
-        filter_criteria_user = {"codigo": "987654321"}
+        if not mensaje is None:
+            self.server.send(mensaje.encode())
+            self.textCons.config(state = tk.NORMAL)
+            self.textCons.insert(tk.END, 
+                             "<You> " + mensaje + "\n\n") 
+            #print(self.msg)
+            self.textCons.config(state = tk.DISABLED) 
+            self.textCons.see(tk.END)
         
-        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
-        db = client['battleship']
-        
-        collection_user = db['Potencia del eje']
-        document_user = collection_user.find_one(filter_criteria_user)
-        if document_user:
-            tablero_user = document_user.get("tablero", [])
-            self.user_board.update_board(tablero_user)
-        
-        collection_enemy = db['Aliados']
-        document_enemy = collection_enemy.find_one(filter_criteria_enemy)
-        if document_enemy:
-            tablero_enemy = document_enemy.get("tablero", [])
-            self.enemy_board.update_board(tablero_enemy)
-
-        client.close()
-
-    def save_conversation(self):
-        conversation = self.text_widget.get("1.0", tk.END)
-        save_path = filedialog.asksaveasfilename(defaultextension=".txt", filetypes=[("Text Files", "*.txt")])
-        if save_path:
-            with open(save_path, "w") as file:
-                file.write(conversation)
-
-class Client:
-    def __init__(self, text_widget):
-        self.text_widget = text_widget
-
-    def send_message(self, message):
-        comando = analisis(message)
-        return comando if comando else "Sin respuesta del servidor"
-
+            
 if __name__ == "__main__":
-    gui = GUI()
-    gui.window.mainloop()
+    ip_address = "127.0.0.1"
+    port = 12345
+    g = GUI(ip_address, port)
