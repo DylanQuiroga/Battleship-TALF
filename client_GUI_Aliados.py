@@ -363,6 +363,8 @@ class GUI:
             with open(save_path, "w") as file:
                 file.write(conversation)
 
+
+
 class Client:
     def __init__(self, text_widget):
         self.text_widget = text_widget
