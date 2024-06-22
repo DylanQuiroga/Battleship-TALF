@@ -106,7 +106,7 @@ def load_data(file_name):
 def update_mongo_document():
     try:
         global data
-        filter_criteria = {"codigo": "123456789"}
+        filter_criteria = {"codigo": "987654321"}
         # Conectar a la base de datos MongoDB
         client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
         db = client['battleship']
