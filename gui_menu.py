@@ -1,9 +1,7 @@
 import tkinter as tk
 from tkinter import ttk
 from PIL import Image, ImageTk
-from ponerBarcos import colocarBarcos
-from Random_pos_ship import posicionarShip_Machine
-from tablero import tableroJugador
+from jugadorVSmaquina import partida
 
 
 class BattleshipMenu:
@@ -42,9 +40,8 @@ class BattleshipMenu:
 
     def play_machine(self):
         self.window.destroy() 
-        colocarBarcos()
-        posicionarShip_Machine()
-        tableroJugador()
+        
+        partida()
              
         print("Playing against the machine.")
 

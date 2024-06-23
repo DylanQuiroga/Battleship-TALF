@@ -1,9 +1,8 @@
 import tkinter as tk
-from tkinter import messagebox, Canvas, PhotoImage
+from tkinter import Canvas, Entry, Button
 import csv
 from PIL import Image, ImageTk
 
-# Clase para la interfaz del tablero
 class BoardGUI:
     def __init__(self, root, csv_file):
         self.root = root
@@ -12,6 +11,8 @@ class BoardGUI:
         self.board = self.load_board_from_csv(csv_file)
         self.image_marked = self.resize_image(Image.open('ship1.png'))  # Ruta de la imagen para casillas marcadas
         self.draw_board()
+        self.entry = Entry(self.root)
+        self.entry.pack()
 
     def load_board_from_csv(self, filename):
         board = {}
@@ -51,28 +52,6 @@ class BoardGUI:
                 else:
                     self.canvas.create_rectangle(x0, y0, x1, y1, fill='DodgerBlue2')
 
-# Función para manejar el comando
-def handle_command():
-    print("prueba")
-
-def tableroJugador():
-    # Crear la ventana principal
-    window = tk.Tk()
-    window.title("Batalla Naval")
-    window.resizable(False, False)  # Hacer que la ventana no sea redimensionable
-
-    # Crear el tablero y mostrarlo
-    board_gui = BoardGUI(window, "tablero.csv")
-
-    # Campo de entrada para el comando
-    entry = tk.Entry(window)
-    entry.pack()
-
-    # Botón para manejar el comando
-    button = tk.Button(window, text="Ingresar comando", command=handle_command)
-    button.pack()
-
-    # Iniciar la GUI
-    window.mainloop()
-
-
+    def process_command(self):
+        command = self.entry.get()
+        return command
