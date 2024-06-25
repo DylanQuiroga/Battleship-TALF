@@ -73,8 +73,8 @@ class BattleshipMenu:
         title_label = tk.Label(self.player_choice_window, text="Escoge tu bando", font=("Arial", 20))
         title_label.pack(pady=(10,20))
 
-        allies_image_raw = PhotoImage(file="Aliados.png")
-        axis_image_raw = PhotoImage(file="Potencia del eje.png")
+        allies_image_raw = PhotoImage(file="instrucciones/imagenes/Aliados.png")
+        axis_image_raw = PhotoImage(file="instrucciones/imagenes/Potencia del eje.png")
 
         # Ajustar el tamaño de las imágenes (ejemplo: zoom x2, subsample x4)
         self.allies_image = allies_image_raw.zoom(2, 2).subsample(20, 20)
