@@ -14,7 +14,7 @@ from pymongo import MongoClient
 
 data = {}
 
-# Definimos los tokens
+# Definimos los tokens 
 tokens = (
     'ATACAR',
     'DEFENDER',
@@ -119,7 +119,7 @@ def update_mongo_document():
         # Conectar a la base de datos MongoDB
         client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
         db = client['battleship']
-        collection = db['Potencias del eje']
+        collection = db['Potencia del eje']
 
         # Generar el nuevo campo "tablero"
         tablero = [{"coord": k, "state": v} for k, v in data.items()]
@@ -201,7 +201,7 @@ def defender_coordenada(coord):
     # Conectar a la base de datos MongoDB
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
     db = client['battleship']
-    collection = db['Potencias del eje']
+    collection = db['Potencia del eje']
 
     document = collection.find_one(filter_criteria)
     if not document:
