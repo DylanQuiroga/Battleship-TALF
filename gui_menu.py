@@ -7,6 +7,8 @@ from jugadorVSmaquina import partida
 from subprocess import Popen, PIPE
 import webbrowser
 
+from ponerBarcos import colocarBarcos
+
 
 class BattleshipMenu:
     def __init__(self):
@@ -65,7 +67,7 @@ class BattleshipMenu:
 
     def open_poner_barcos(self):
         # Asegúrate de que el path al script sea correcto. Puede necesitar ajustes.
-        subprocess.Popen(['python', 'ponerBarcos.py'])
+        colocarBarcos()
 
     def play_player(self):
         # Crear una nueva ventana
