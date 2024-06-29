@@ -19,7 +19,8 @@ tokens = (
     'ATACAR',
     'DEFENDER',
     'COORDINATE',
-    'COMENZAR'
+    'COMENZAR',
+    'ESCANEAR'
 )
 
 # Definimos las expresiones regulares para los tokens
@@ -27,6 +28,7 @@ t_ATACAR = r'Atacar'
 t_DEFENDER = r'Defender'
 t_COORDINATE = r'[A-J][1-9]0?'
 t_COMENZAR = r'Comenzar'
+t_ESCANEAR = r'Escanear'
 
 # Ignoramos los espacios en blanco
 t_ignore = ' \t'
@@ -39,7 +41,8 @@ def p_command(p):
 
 def p_action(p):
     '''action : ATACAR
-              | DEFENDER'''
+              | DEFENDER
+              | ESCANEAR'''
     p[0] = p[1]
 
 # Manejamos los errores
@@ -84,6 +87,13 @@ def analizarMensaje(resultado):
             coord = coord_vertical + coord_horizontal
             mensaje = defender_coordenada(coord)
             return mensaje
+        elif t_ESCANEAR == resultado[0]:
+            coord = resultado[1]
+            coord_vertical = coord[0]
+            coord_horizontal = coord[1:]
+            coord = coord_vertical + coord_horizontal
+            mensaje = escanear_coordenada(coord)
+            return mensaje
         else:
             return "error tipo 0"
 
@@ -116,6 +126,9 @@ def update_mongo_document():
 
         # Actualizar el documento
         collection.update_one(filter_criteria, {"$set": {"tablero": tablero}})
+
+        update = {"$set": {"cantEscanear": 3}}
+        collection.update_one(filter_criteria, update)
 
         # Cerrar la conexión
         client.close()
@@ -183,7 +196,6 @@ def atacar_coordenada(coord):
 
     return str(message)
 
-
 def defender_coordenada(coord):
     filter_criteria = {"codigo": "987654321"}
     # Conectar a la base de datos MongoDB
@@ -230,6 +242,53 @@ def defender_coordenada(coord):
         message += ", aún hay barcos"
     else:
         message += ", todos los barcos destruidos"
+    
+    return str(message)
+
+def obtener_coordenadas_3x3(coord):
+    letra, numero = coord[0], int(coord[1:])
+    letras = [chr(ord(letra) + i) for i in range(-1, 2)]
+    numeros = [numero + i for i in range(-1, 2)]
+    coordenadas = [f"{l}{n}" for l in letras for n in numeros]
+    return coordenadas
+
+def escanear_coordenada(coord):
+    filter_criteria_PdE = {"codigo": "987654321"}
+    filter_criteria_Aliados = {"codigo": "123456789"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection_PdE = db['Potencia del eje']
+    collection_Aliados = db['Aliados']
+
+    document_Aliados = collection_Aliados.find_one(filter_criteria_Aliados)
+    document_Pde = collection_PdE.find_one(filter_criteria_PdE)
+
+    if not document_Aliados and not document_Pde:
+        print("Documento no encontrado.")
+        return None
+    
+    cant_escanear = document_Pde.get("cantEscanear", 0)
+    if cant_escanear <= 0:
+        return "No puedes escanear más. Se acabaron las oportunidades."
+    
+    tablero = document_Aliados.get("tablero", [])
+    coordenadas_a_escanear = obtener_coordenadas_3x3(coord)
+    barcos_encontrados = False
+
+    for item in tablero:
+        if item["coord"] in coordenadas_a_escanear and item["state"] in [1, 2]:
+            barcos_encontrados = True
+            break
+
+    # Descontar una oportunidad de escanear
+    cant_escanear -= 1
+    collection_PdE.update_one(filter_criteria_PdE, {"$set": {"cantEscanear": cant_escanear}})
+
+    if barcos_encontrados:
+        message = "Se han detectado barcos en el área escaneada."
+    else:
+        message = "No se han detectado barcos en el área escaneada."
     
     return str(message)
 

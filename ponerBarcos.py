@@ -9,6 +9,8 @@ class Board:
         self.button_states = {}
         self.ships = []
         self.buttons = {}
+        self.ship_counts = {4: 0, 3: 0, 2: 0, 1: 0}
+        self.max_ships = {4: 1, 3: 2, 2: 1, 1: 4}
 
     def generate_ship(self, size):
         while True:
@@ -41,16 +43,23 @@ class Board:
         for coord in self.button_states.keys():
             self.button_states[coord] = 0
         self.ships.clear()
+        self.ship_counts = {4: 0, 3: 0, 2: 0, 1: 0}
 
     def place_ships(self):
         self.clear_board()
-        for size in [3, 3, 2, 2, 1, 1, 1, 1]:  # ship sizes
+        for size in [4, 3, 3, 2, 1, 1, 1, 1]:  # Actualizar tamaños de barcos según los requisitos
             ship_coords = self.generate_ship(size)
-            self.ships.append(ship_coords)
-            for coord in ship_coords:
-                button = self.buttons[coord]
-                button.config(bg='yellow')
-                self.button_states[coord] = 1
+            if ship_coords:  # Verificar si se generó el barco correctamente
+                self.ships.append(ship_coords)
+                for coord in ship_coords:
+                    button = self.buttons[coord]
+                    button.config(bg='yellow')
+                    self.button_states[coord] = 1
+                self.ship_counts[size] += 1
+            else:
+                print(f"No se pudo colocar un barco de tamaño {size}. Intentando de nuevo.")
+                self.place_ships()  # Intentar colocar los barcos de nuevo si falla
+                break
 
     def save_board_state(self, filename):
         with open(filename, 'w', newline='') as file:
@@ -65,6 +74,7 @@ class GUI:
         self.board = board
         self.create_board_buttons()
         self.create_buttons()
+        self.create_ship_tracker()
 
     def create_board_buttons(self):
         for i in range(10):
@@ -87,8 +97,29 @@ class GUI:
         random_button = tk.Button(button_frame, text="Aleatorio", command=self.place_random_ships)
         random_button.pack(side=tk.LEFT, padx=5)
 
-        clear_button = tk.Button(button_frame, text="Limpiar", command=self.board.clear_board)
+        clear_button = tk.Button(button_frame, text="Limpiar", command=self.clear_board_and_update)
         clear_button.pack(side=tk.LEFT, padx=5)
+
+    def create_ship_tracker(self):
+        self.ship_tracker_frame = tk.Frame(self.root)
+        self.ship_tracker_frame.grid(row=12, column=0, columnspan=10, pady=10)
+        self.ship_tracker_label = tk.Label(self.ship_tracker_frame, text=self.get_ship_tracker_text(), justify=tk.LEFT)
+        self.ship_tracker_label.pack()
+
+    def get_ship_tracker_text(self):
+        return f"""
+        Portaviones (4 casillas): {self.board.max_ships[4] - self.board.ship_counts[4]}
+        Acorazado (3 casillas): {self.board.max_ships[3] - self.board.ship_counts[3]}
+        Destructor (2 casillas): {self.board.max_ships[2] - self.board.ship_counts[2]}
+        Fragata (1 casilla): {self.board.max_ships[1] - self.board.ship_counts[1]}
+        """
+
+    def update_ship_tracker(self):
+        self.ship_tracker_label.config(text=self.get_ship_tracker_text())
+
+    def clear_board_and_update(self):
+        self.board.clear_board()
+        self.update_ship_tracker()
 
     def on_button_click(self, button, coord):
         if button.cget('bg') == 'yellow':
@@ -101,12 +132,13 @@ class GUI:
         # Validar la cantidad de casillas marcadas y la secuencia
         marked_cells = [coord for coord, state in self.board.button_states.items() if state == 1]
         if not self.valid_ships(marked_cells):
-            messagebox.showwarning("Advertencia", "¡Las casillas marcadas no forman barcos válidos!")
+            messagebox.showwarning("Advertencia", "¡Las casillas marcadas no forman barcos válidos o exceden el límite permitido!")
             button.config(bg='SystemButtonFace')
             self.board.button_states[coord] = 0
+
+        self.update_ship_tracker()
     
     def valid_ships(self, marked_cells):
-        #funcion para validar si las celdas marcadas estan en vertical y horizontal
         def is_linear(cells):
             rows = sorted(int(cell[1:]) for cell in cells)
             cols = sorted(ord(cell[0]) for cell in cells)
@@ -122,6 +154,7 @@ class GUI:
             return [n for n in neighbors if n in marked_cells]
 
         visited = set()
+        new_ship_counts = {4: 0, 3: 0, 2: 0, 1: 0}
         for cell in marked_cells:
             if cell not in visited:
                 stack = [cell]
@@ -132,9 +165,14 @@ class GUI:
                         visited.add(current)
                         current_ship.append(current)
                         stack.extend(get_neighbors(current))
-                if len(current_ship) not in [1, 2, 3] or not is_linear(current_ship):
+                if len(current_ship) not in [1, 2, 3, 4] or not is_linear(current_ship):
                     return False
-            
+                
+                new_ship_counts[len(current_ship)] += 1
+                if new_ship_counts[len(current_ship)] > self.board.max_ships[len(current_ship)]:
+                    return False
+        
+        self.board.ship_counts = new_ship_counts
         return True
 
     def save_board(self):
@@ -143,6 +181,7 @@ class GUI:
 
     def place_random_ships(self):
         self.board.place_ships()
+        self.update_ship_tracker()
 
 def colocarBarcos():
     window = tk.Tk()
