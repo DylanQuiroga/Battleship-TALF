@@ -3,6 +3,7 @@ import csv
 import random
 from tkinter import messagebox
 
+
 class Board:
     def __init__(self):
         self.button_states = {}
@@ -182,7 +183,7 @@ class GUI:
         self.board.place_ships()
         self.update_ship_tracker()
 
-def main():
+def colocarBarcos():
     window = tk.Tk()
     window.title("Batalla Naval")
     window.resizable(False, False)
@@ -192,5 +193,4 @@ def main():
 
     window.mainloop()
 
-if __name__ == "__main__":
-    main()
+

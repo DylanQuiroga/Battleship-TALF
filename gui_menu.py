@@ -3,8 +3,10 @@ import subprocess
 import tkinter as tk
 from tkinter import PhotoImage, ttk
 from PIL import Image, ImageTk
+from jugadorVSmaquina import partida
 from subprocess import Popen, PIPE
 import webbrowser
+
 
 class BattleshipMenu:
     def __init__(self):
@@ -44,7 +46,10 @@ class BattleshipMenu:
         self.instructions_window = None
 
     def play_machine(self):
-        # Add code to start playing against the machine
+        self.window.destroy() 
+        
+        partida()
+             
         print("Playing against the machine.")
 
     def show_instructions(self):
