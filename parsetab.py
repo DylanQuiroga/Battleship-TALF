@@ -27,9 +27,9 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> command","S'",1,None,None,None),
-  ('command -> action COORDINATE','command',2,'p_command','client_GUI_Aliados.py',38),
-  ('command -> COMENZAR','command',1,'p_command','client_GUI_Aliados.py',39),
-  ('action -> ATACAR','action',1,'p_action','client_GUI_Aliados.py',43),
-  ('action -> DEFENDER','action',1,'p_action','client_GUI_Aliados.py',44),
-  ('action -> ESCANEAR','action',1,'p_action','client_GUI_Aliados.py',45),
+  ('command -> action COORDINATE','command',2,'p_command','client_GUI_PdE.py',38),
+  ('command -> COMENZAR','command',1,'p_command','client_GUI_PdE.py',39),
+  ('action -> ATACAR','action',1,'p_action','client_GUI_PdE.py',43),
+  ('action -> DEFENDER','action',1,'p_action','client_GUI_PdE.py',44),
+  ('action -> ESCANEAR','action',1,'p_action','client_GUI_PdE.py',45),
 ]
