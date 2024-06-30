@@ -1,8 +1,5 @@
 import csv
 import random
-from pymongo import MongoClient
-
-data = {}
 
 def load_board(file_name):
     board = []
@@ -12,55 +9,66 @@ def load_board(file_name):
             board.append(row)
     return board
 
-def update_mongo_document():
-    try:
-        global data
-        # Implementación de la actualización del documento MongoDB
-        pass
-    except Exception as e:
-        print(f'Error: {e}')
-        return False
-
-def atacar_coordenada(coord):
-    archivo_csv = "machine_board.csv"
-    tablero_maquina = load_board("machine_board.csv")
+def atacar_coordenada(coord, csv):
+    tablero = load_board(csv)
     estado_nuevo = '-1'
     
-    for item in tablero_maquina:
+    for item in tablero:
         if item["Coord"] == coord:
             coord_state = item["State"]
-            tablero_maquina = leer_csv(archivo_csv)
+            tablero = leer_csv(csv)
             if coord_state == '-1':
                 message = "Ya habías impactado este barco antes"
             elif coord_state == '0':
                 message = "Agua"
             elif coord_state == '1':         
-                tablero_modificado = modificar_csv(tablero_maquina, coord, estado_nuevo)
-                escribir_csv(archivo_csv, tablero_modificado)
+                tablero_modificado = modificar_csv(tablero, coord, estado_nuevo)
+                escribir_csv(csv, tablero_modificado)
                 message = "¡Impacto en un barco!" 
             elif coord_state == '2':
                 if random.random() < 0.5:
-                    tablero_modificado = modificar_csv(tablero_maquina, coord, estado_nuevo)
-                    escribir_csv(archivo_csv, tablero_modificado)
+                    tablero_modificado = modificar_csv(tablero, coord, estado_nuevo)
+                    escribir_csv(csv, tablero_modificado)
                     message = "¡Impacto en un barco en posición de defenza!"
                 else:
                     estado_nuevo = '1'
-                    tablero_modificado = modificar_csv(tablero_maquina, coord, estado_nuevo)
-                    escribir_csv(archivo_csv, tablero_modificado)
+                    tablero_modificado = modificar_csv(tablero, coord, estado_nuevo)
+                    escribir_csv(csv, tablero_modificado)
                     message = "El misil ha fallado"
+    
+    return str(message)
+ 
+def defender_coordenada(coord, csv):
+    tablero = load_board(csv)
+    estado_nuevo = '2'
+    
+    for item in tablero:
+        if item["Coord"] == coord:
+            coord_state = item["State"]
+            tablero = leer_csv(csv)
+            if coord_state == '-1':
+                message = "Parte de barco destruida, no se puede defender"
+            elif coord_state == '0':
+                message = "No hay barcos en esta coordenada"
+            elif coord_state == '1':         
+                tablero_modificado = modificar_csv(tablero, coord, estado_nuevo)
+                escribir_csv(csv, tablero_modificado)
+                message = "Barco en posición de defensa"
+            elif coord_state == '2':
+                message = "Este barco ya está en posición de defensa"
     
     return str(message)
                          
 def comprobar_ganador(csv):
     tablero = load_board(csv)
-    if verificar_ganador is True:
+    if verificar_tablaVacia(tablero) is True:
         return True
     else:
         return False
     
-def verificar_ganador(tablero):
-    for estado in tablero.values():
-        if estado == '1':
+def verificar_tablaVacia(tablero):
+    for estado in tablero:
+        if estado["State"] == '1':
             return False
     return True
 
@@ -85,6 +93,29 @@ def modificar_csv(tablero, coord, nuevo_estado):
             break
     return tablero
 
-def defender_coordenada(coord):
-    # Implementación de la lógica de defensa
-    pass
+def generar_comando_maquina(tablero_jugador_csv):
+    # Leer el tablero del jugador desde el archivo CSV
+    tablero_jugador = load_board(tablero_jugador_csv)
+    
+    # Obtener todas las posibles coordenadas (A1 a J10)
+    coordenadas = [f"{letra}{numero}" for letra in 'ABCDEFGHIJ' for numero in range(1, 11)]
+    
+    # Filtrar las coordenadas que no han sido atacadas aún
+    coordenadas_disponibles = []
+    for item in tablero_jugador:
+        if item["State"] != '1':
+            coordenadas_disponibles.append(item["Coord"])
+    
+    # Si no hay coordenadas disponibles, se puede manejar según la lógica de tu juego
+    if not coordenadas_disponibles:
+        return None
+    
+    # Elegir una coordenada aleatoria entre las disponibles
+    coordenada = random.choice(coordenadas_disponibles)
+    
+    acciones = ['Atacar', 'Defender']
+    accion = random.choice(acciones)
+    
+    comando = f"{accion} {coordenada}"
+    
+    return comando

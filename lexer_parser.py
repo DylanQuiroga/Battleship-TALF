@@ -45,21 +45,20 @@ def p_error(p):
 lexer = lex.lex()
 parser = yacc.yacc()
 
-def analisis(entrada):
+def analisis(entrada,csv):
     try:
         resultado = parser.parse(entrada)
-        mensaje = analizarMensaje(resultado)
+        mensaje = analizarMensaje(resultado,csv)
         return mensaje
     except Exception as e:
         # Si no es un comando válido, devolvemos el mensaje original
         mensaje = "no es un comando valido"
         return mensaje
 
-def analizarMensaje(resultado):
-    global data
+def analizarMensaje(resultado,csv):
     try:
         if t_COMENZAR == resultado[0]:
-            data = load_data('tablero.csv')
+            data = load_data(csv)
             if data:
                 print("datos cargados correctamente 1")
             if valor:
@@ -70,15 +69,56 @@ def analizarMensaje(resultado):
             coord_vertical = coord[0]
             coord_horizontal = coord[1:]
             coord = coord_vertical + coord_horizontal
-            mensaje = atacar_coordenada(coord)
+            mensaje = atacar_coordenada(coord,csv)
             return mensaje
         
         elif t_DEFENDER == resultado[0]:
+            csv = "tablero.csv"
             coord = resultado[1]
             coord_vertical = coord[0]
             coord_horizontal = coord[1:]
             coord = coord_vertical + coord_horizontal
-            mensaje = defender_coordenada(coord)
+            mensaje = defender_coordenada(coord,csv)
+            return mensaje
+        else:
+            return "error tipo 0"
+
+    except lex.LexError as lex_error:
+        print(f"Error léxico: {lex_error}")
+        return "error tipo 1"
+    except Exception as e:
+        print(e)
+        return "error tipo 2"
+    pass
+
+def analisisMaquina(entrada,csv):
+    try:
+        resultado = parser.parse(entrada)
+        mensaje = analizarComandoMaquina(resultado, csv)
+        return mensaje
+    except Exception as e:
+        # Si no es un comando válido, devolvemos el mensaje original
+        mensaje = "no es un comando valido"
+        return mensaje
+    
+def analizarComandoMaquina(resultado, csv):
+    try:
+
+        if t_ATACAR == resultado[0]:
+            coord = resultado[1]
+            coord_vertical = coord[0]
+            coord_horizontal = coord[1:]
+            coord = coord_vertical + coord_horizontal
+            mensaje = atacar_coordenada(coord,csv)
+            return mensaje
+        
+        elif t_DEFENDER == resultado[0]:
+            csv = "machine_board.csv"
+            coord = resultado[1]
+            coord_vertical = coord[0]
+            coord_horizontal = coord[1:]
+            coord = coord_vertical + coord_horizontal
+            mensaje = defender_coordenada(coord,csv)
             return mensaje
         else:
             return "error tipo 0"

@@ -2,8 +2,56 @@ from tablero import BoardGUI
 from ponerBarcos import colocarBarcos
 from Random_pos_ship import posicionarShip_Machine
 import tkinter as tk
-from lexer_parser import analisis
-from data_operaciones import comprobar_ganador
+from tkinter import messagebox  
+from lexer_parser import analisis , analisisMaquina
+from data_operaciones import comprobar_ganador, generar_comando_maquina
+import random
+
+
+class PartidaGUI:
+    
+    def __init__(self, master, tablero_jugador, tablero_maquina):
+        self.master = master
+        self.tablero_jugador = tablero_jugador
+        self.tablero_maquina = tablero_maquina
+        self.board_gui = BoardGUI(self.master, self.tablero_jugador)
+        self.button_obtener_comando = tk.Button(self.master, text="Obtener Comando", command=self.jugador_ataca)
+        self.button_obtener_comando.pack()
+        self.jugador_turno = True
+        self.juego_en_curso = True
+
+    def jugador_ataca(self):
+        if self.juego_en_curso and self.jugador_turno:
+            comando = self.board_gui.process_command()
+            resultado = analisis(comando, self.tablero_maquina)  # Asumiendo que tienes un método para atacar el tablero de la máquina
+            print(resultado)
+            
+            if comprobar_ganador(self.tablero_maquina):
+                self.juego_en_curso = False
+                print("Ganaste")
+                self.mostrar_mensaje("¡Felicidades! Has ganado.")
+            else:
+                self.jugador_turno = False
+                print("Turno de la máquina")
+                self.mostrar_mensaje("Turno de la máquina")
+                self.maquina_ataca()
+    
+    def maquina_ataca(self):
+        if self.juego_en_curso and not self.jugador_turno:
+            comandoMaquina = generar_comando_maquina(self.tablero_jugador)  # Asumiendo que tienes un método para generar el ataque de la máquina
+            resultado = analisisMaquina(comandoMaquina, self.tablero_jugador)  # Mostrar el resultado del ataque
+            if comprobar_ganador(self.tablero_jugador):
+                self.juego_en_curso = False
+                print("Perdiste")
+                self.mostrar_mensaje("La máquina ha ganado. Mejor suerte la próxima vez.")
+            else:
+                self.jugador_turno = True
+                self.mostrar_mensaje("Tu turno")
+
+    def mostrar_mensaje(self, mensaje):
+        messagebox.showinfo("Resultado", mensaje)
+
+
 
 def partida():
     colocarBarcos()
@@ -17,49 +65,7 @@ def partida():
     window.title("Batalla Naval")
     window.resizable(False, False)
     
-    class PartidaGUI:
-        def __init__(self, master):
-            self.master = master
-            self.board_gui = BoardGUI(self.master, tablero_jugador)
-            self.button_obtener_comando = tk.Button(self.master, text="Obtener Comando", command=self.jugador_ataca)
-            self.button_obtener_comando.pack()
-            self.jugador_turno = True
-            self.juego_en_curso = True
-
-        def jugador_ataca(self):
-            if self.juego_en_curso and self.jugador_turno:
-                comando = self.board_gui.process_command()
-                resultado = analisis(comando)  # Asumiendo que tienes un método para atacar el tablero de la máquina
-                print(resultado)
-                if comprobar_ganador(tablero_maquina):
-                    self.juego_en_curso = False
-                    print("Ganaste")
-                    self.mostrar_mensaje("¡Felicidades! Has ganado.")
-                else:
-                    self.jugador_turno = False
-                    print("turno de la maquina")
-                    self.mostrar_mensaje("Turno de la maquina")
-                    self.maquina_ataca()
-        
-        def maquina_ataca(self):
-            if self.juego_en_curso and not self.jugador_turno:
-                comando = self.board_gui.generar_comando_ataque()  # Asumiendo que tienes un método para generar el ataque de la máquina
-                resultado = self.board_gui.atacar_jugador(comando)  # Asumiendo que tienes un método para atacar el tablero del jugador
-                self.board_gui.mostrar_resultado_ataque(resultado)  # Mostrar el resultado del ataque
-
-                if self.verificar_ganador(self.board_gui.board, self.board_gui.load_board_from_csv(tablero_jugador)):
-                    self.juego_en_curso = False
-                    self.mostrar_mensaje("La máquina ha ganado. Mejor suerte la próxima vez.")
-                else:
-                    self.jugador_turno = True
-
-        
-       
-
-        def mostrar_mensaje(self, mensaje):
-            tk.messagebox.showinfo("Resultado", mensaje)
-
-    partida_gui = PartidaGUI(window)
+    partida_gui = PartidaGUI(window, tablero_jugador, tablero_maquina)
     
     # Iniciar la GUI
     window.mainloop()
