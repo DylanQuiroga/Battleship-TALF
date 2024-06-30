@@ -3,6 +3,7 @@ from ponerBarcos import colocarBarcos
 from Random_pos_ship import posicionarShip_Machine
 import tkinter as tk
 from lexer_parser import analisis
+from data_operaciones import comprobar_ganador
 
 def partida():
     colocarBarcos()
@@ -29,12 +30,15 @@ def partida():
             if self.juego_en_curso and self.jugador_turno:
                 comando = self.board_gui.process_command()
                 resultado = analisis(comando)  # Asumiendo que tienes un método para atacar el tablero de la máquina
-                print(comando)
-                if self.verificar_ganador(self.board_gui.enemy_board, self.board_gui.load_board_from_csv(tablero_maquina)):
+                print(resultado)
+                if comprobar_ganador(tablero_maquina):
                     self.juego_en_curso = False
+                    print("Ganaste")
                     self.mostrar_mensaje("¡Felicidades! Has ganado.")
                 else:
                     self.jugador_turno = False
+                    print("turno de la maquina")
+                    self.mostrar_mensaje("Turno de la maquina")
                     self.maquina_ataca()
         
         def maquina_ataca(self):
@@ -49,12 +53,8 @@ def partida():
                 else:
                     self.jugador_turno = True
 
-        def verificar_ganador(self, tablero_actual, tablero_original):
-            # Comparar el tablero actual con el original para verificar si todos los barcos han sido hundidos
-            for coord, state in tablero_original.items():
-                if state == 1 and tablero_actual.get(coord) != -1:
-                    return False
-            return True
+        
+       
 
         def mostrar_mensaje(self, mensaje):
             tk.messagebox.showinfo("Resultado", mensaje)

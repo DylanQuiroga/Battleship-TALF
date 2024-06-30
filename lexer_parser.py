@@ -1,5 +1,6 @@
 import ply.lex as lex
 import ply.yacc as yacc
+from data_operaciones import atacar_coordenada, defender_coordenada
 
 # Definimos los tokens
 tokens = (
@@ -51,15 +52,14 @@ def analisis(entrada):
         return mensaje
     except Exception as e:
         # Si no es un comando válido, devolvemos el mensaje original
-        print("no es un comando valido")
-        return entrada
+        mensaje = "no es un comando valido"
+        return mensaje
 
 def analizarMensaje(resultado):
     global data
     try:
         if t_COMENZAR == resultado[0]:
             data = load_data('tablero.csv')
-            valor = update_mongo_document()
             if data:
                 print("datos cargados correctamente 1")
             if valor:
@@ -72,6 +72,7 @@ def analizarMensaje(resultado):
             coord = coord_vertical + coord_horizontal
             mensaje = atacar_coordenada(coord)
             return mensaje
+        
         elif t_DEFENDER == resultado[0]:
             coord = resultado[1]
             coord_vertical = coord[0]
