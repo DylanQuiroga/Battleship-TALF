@@ -105,8 +105,8 @@ def analizarMensaje(resultado):
             mensaje = escanear_coordenada(coord)
             return mensaje
         elif t_CAMBIO == resultado[0]:
-            cambiar_turno(0, False)
-            cambiar_turno(1, True)
+            cambiar_turno(0, True)
+            cambiar_turno(1, False)
             restaurar_acciones()
             return "Cambio de turno"
         elif t_ABRIR_TABLERO_PROPIO == resultado[0]:
@@ -202,7 +202,7 @@ def cambiar_turno(bando, valor):
     client.close()
 
 def cambiar_accion(accion, valor):
-    '''La accion 0 es atacar y la accion 1 es defender. El valor es booleano'''
+    # La accion 0 es atacar y la accion 1 es defender. El valor es booleano'''
 
     if accion == 0:
         filter_criteria = {"codigo": "987654321"}

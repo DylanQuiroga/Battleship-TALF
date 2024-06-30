@@ -4,9 +4,12 @@ import sys
 from collections import defaultdict as df
 import time
 
+from client_GUI_Aliados import iniciar_juego
+
 class Server:
     def __init__(self):
         self.rooms = df(list)
+        self.user_count = 0
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -31,15 +34,17 @@ class Server:
 
             if room_id not in self.rooms:
                 connection.send("Bienvenido capitán!".encode())
+                connection.send("\nEspere a que se una otro jugador y decidir quien empieza...".encode())
             else:
                 connection.send("Bienvenido capitán!".encode())
+                connection.send("\nEspere mientras se decide quién empieza...".encode())
 
             self.rooms[room_id].append(connection)
-
+            self.user_count += 1
             # Send welcome message to the room
             welcome_message = f"{user_id} se ha unido a la sala"
             self.broadcast(welcome_message, connection, room_id)
-
+            #self.broadcast("Espere mientras se decide quién empieza...", connection, room_id)
             while True:
                 message = connection.recv(1024)
                 if message:
