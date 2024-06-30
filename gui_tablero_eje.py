@@ -88,6 +88,7 @@ class BoardGUI:
 if __name__ == "__main__":
     mongo_uri = 'mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/'  # Tu URI de MongoDB
     root = tk.Tk()
-    root.geometry("440x440+1200+50")
+    # pantalla grande root.geometry("440x440+1200+50")
+    root.geometry("440x440+480+296")
     board_gui = BoardGUI(root, mongo_uri)
     root.mainloop()
