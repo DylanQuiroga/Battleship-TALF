@@ -18,6 +18,7 @@ COMENZAR             : 2
 COORDINATE           : 1
 DEFENDER             : 5
 ESCANEAR             : 6
+
 error                : 
 
 Nonterminals, with rules where they appear
@@ -56,6 +57,7 @@ state 2
 
     (1) command -> action . COORDINATE
 
+
     COORDINATE      shift and go to state 8
 
 
@@ -92,7 +94,6 @@ state 7
     (6) action -> ESCANEAR .
 
     COORDINATE      reduce using rule 6 (action -> ESCANEAR .)
-
 
 state 8
 

@@ -316,7 +316,7 @@ def atacar_coordenada(coord):
         elif coord_state == 2:
             if random.random() < 0.5:
                 data[coord] = -1
-                message = "¡Impacto en un barco en posición de defenza!"
+                message = "¡Impacto en un barco en posición de defensa!"
             else:
                 message = "El misil ha fallado"
 
