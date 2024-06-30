@@ -12,7 +12,7 @@ import ply.lex as lex
 import ply.yacc as yacc
 import pymongo
 from pymongo import MongoClient
-
+import random
 data = {}
 
 # Definimos los tokens
@@ -82,7 +82,8 @@ def analizarMensaje(resultado):
                 print("datos cargados correctamente 1")
             if valor:
                 print("datos cargados correctamente 2")
-
+            mensaje = iniciar_juego()
+            return mensaje 
         elif t_ATACAR == resultado[0]:
             coord = resultado[1]
             coord_vertical = coord[0]
@@ -137,23 +138,27 @@ def load_data(file_name):
         data = {rows[0]: int(rows[1]) for rows in reader}
     return data
 
-def consultar_turno():
-    filter_criteria = {"codigo": "123456789"}
-    # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
-    db = client['battleship']
-    collection = db['Aliados']
-
-    document = collection.find_one(filter_criteria)
-
-    if not document:
-        print("Documento no encontrado.")
-        return None
+def iniciar_juego():
+    # Resetear acciones de ambos bandos
+    restaurar_acciones()
+    restaurar_acciones_aliados()
     
-    turno = document.get("turno", None)
-    client.close()
-    return turno
+    # Decidir aleatoriamente quién empieza
+    turno_aleatorio = random.choice([0, 1])
+    # Establecer el turno activo para uno de los bandos y desactivar el turno para el otro
 
+    mensaje = ""
+
+    if turno_aleatorio == 0:
+        cambiar_turno(0, True)
+        cambiar_turno(1, False)
+        mensaje = "Según la suerte... ¡Comienzan los Aliados!"
+    else:
+        cambiar_turno(0, False)
+        cambiar_turno(1, True)
+        mensaje = "Según la suerte... ¡Comienzan la Potencia del Eje!"
+    return str(mensaje)
+    
 def consultar_accion(valor):
     '''El valor 0 es para atacar y el valor 1 es para defender'''
 
@@ -176,8 +181,25 @@ def consultar_accion(valor):
     client.close()
     return accion
 
+def consultar_turno():
+    filter_criteria = {"codigo": "123456789"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection = db['Aliados']
+
+    document = collection.find_one(filter_criteria)
+
+    if not document:
+        print("Documento no encontrado.")
+        return None
+    
+    turno = document.get("turno", None)
+    client.close()
+    return turno
+
 def cambiar_turno(bando, valor):
-    '''El bando 0 es Aliados y el bando 1 es Potencia del eje. El valor es booleano'''
+    # El bando 0 es Aliados y el bando 1 es Potencia del eje. El valor es booleano
 
     if bando == 0:
         filter_criteria = {"codigo": "123456789"}
@@ -188,6 +210,11 @@ def cambiar_turno(bando, valor):
 
         update = {"$set": {"turno": valor}}
         collection.update_one(filter_criteria, update)
+
+        # Restaurar acciones de ataque y defensa
+        cambiar_accion(0, True)  # Atacar
+        cambiar_accion(1, True)  # Defender
+
     elif bando == 1:
         filter_criteria = {"codigo": "987654321"}
         # Conectar a la base de datos MongoDB
@@ -197,13 +224,19 @@ def cambiar_turno(bando, valor):
 
         update = {"$set": {"turno": valor}}
         collection.update_one(filter_criteria, update)
+
+        # Restaurar acciones de ataque y defensa
+        cambiar_accion(0, True)  # Atacar
+        cambiar_accion(1, True)  # Defender
+
     else:
         print("Bando no encontrado")
 
     client.close()
 
+
 def cambiar_accion(accion, valor):
-    '''La accion 0 es atacar y la accion 1 es defender. El valor es booleano'''
+    # La accion 0 es atacar y la accion 1 es defender. El valor es booleano'''
 
     if accion == 0:
         filter_criteria = {"codigo": "123456789"}
@@ -234,6 +267,20 @@ def restaurar_acciones():
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
     db = client['battleship']
     collection = db['Potencia del eje']
+
+    update = {"$set": {"atacar": True}}
+    collection.update_one(filter_criteria, update)
+    update = {"$set": {"defender": True}}
+    collection.update_one(filter_criteria, update)
+
+    client.close()
+
+def restaurar_acciones_aliados():
+    filter_criteria = {"codigo": "123456789"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection = db['Aliados']
 
     update = {"$set": {"atacar": True}}
     collection.update_one(filter_criteria, update)
@@ -609,6 +656,8 @@ class GUI:
             self.textCons.see(tk.END)
         
             
+
+
 if __name__ == "__main__":
     ip_address = "127.0.0.1"
     port = 12345
