@@ -138,14 +138,32 @@ def load_data(file_name):
         data = {rows[0]: int(rows[1]) for rows in reader}
     return data
 
+import threading
+import random
+
 def iniciar_juego():
-    # Resetear acciones de ambos bandos
-    restaurar_acciones()
-    restaurar_acciones_aliados()
     
+    # Definir las tareas que se ejecutarán en hilos separados
+    def proceso1_restaurar_acciones():
+        restaurar_acciones()
+
+    def proceso2_restaurar_acciones_aliados():
+        restaurar_acciones_aliados()
+
+    # Crear hilos para cada tarea
+    hilo_acciones = threading.Thread(target=proceso1_restaurar_acciones)
+    hilo_acciones_aliados = threading.Thread(target=proceso2_restaurar_acciones_aliados)
+
+    # Iniciar los hilos
+    hilo_acciones.start()
+    hilo_acciones_aliados.start()
+
+    # Esperar a que ambos hilos terminen
+    hilo_acciones.join()
+    hilo_acciones_aliados.join()
+
     # Decidir aleatoriamente quién empieza
     turno_aleatorio = random.choice([0, 1])
-    # Establecer el turno activo para uno de los bandos y desactivar el turno para el otro
 
     mensaje = ""
 
