@@ -6,9 +6,10 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ATACAR COMENZAR COORDINATE DEFENDER ESCANEARcommand : action COORDINATE\n               | COMENZARaction : ATACAR\n              | DEFENDER\n              | ESCANEAR'
+_lr_signature = 'ATACAR CAMBIO COMENZAR COORDINATE DEFENDER ESCANEARcommand : action COORDINATE\n                | COMENZAR\n                | CAMBIOaction : ATACAR\n              | DEFENDER\n              | ESCANEAR'
     
-_lr_action_items = {'COMENZAR':([0,],[3,]),'ATACAR':([0,],[4,]),'DEFENDER':([0,],[5,]),'ESCANEAR':([0,],[6,]),'$end':([1,3,7,],[0,-2,-1,]),'COORDINATE':([2,4,5,6,],[7,-3,-4,-5,]),}
+_lr_action_items = {'COMENZAR':([0,],[3,]),'CAMBIO':([0,],[4,]),'ATACAR':([0,],[5,]),'DEFENDER':([0,],[6,]),'ESCANEAR':([0,],[7,]),'$end':([1,3,4,8,],[0,-2,-3,-1,]),'COORDINATE':([2,5,6,7,],[8,-4,-5,-6,]),}
+
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -27,9 +28,12 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> command","S'",1,None,None,None),
-  ('command -> action COORDINATE','command',2,'p_command','client_GUI_PdE.py',38),
-  ('command -> COMENZAR','command',1,'p_command','client_GUI_PdE.py',39),
-  ('action -> ATACAR','action',1,'p_action','client_GUI_PdE.py',43),
-  ('action -> DEFENDER','action',1,'p_action','client_GUI_PdE.py',44),
-  ('action -> ESCANEAR','action',1,'p_action','client_GUI_PdE.py',45),
+
+  ('command -> action COORDINATE','command',2,'p_command','client_GUI_Aliados.py',40),
+  ('command -> COMENZAR','command',1,'p_command','client_GUI_Aliados.py',41),
+  ('command -> CAMBIO','command',1,'p_command','client_GUI_Aliados.py',42),
+  ('action -> ATACAR','action',1,'p_action','client_GUI_Aliados.py',46),
+  ('action -> DEFENDER','action',1,'p_action','client_GUI_Aliados.py',47),
+  ('action -> ESCANEAR','action',1,'p_action','client_GUI_Aliados.py',48),
+
 ]

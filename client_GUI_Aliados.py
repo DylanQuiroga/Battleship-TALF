@@ -20,7 +20,8 @@ tokens = (
     'DEFENDER',
     'COORDINATE',
     'COMENZAR',
-    'ESCANEAR'
+    'ESCANEAR',
+    'CAMBIO'
 )
 
 # Definimos las expresiones regulares para los tokens
@@ -29,6 +30,7 @@ t_DEFENDER = r'Defender'
 t_COORDINATE = r'[A-J][1-9]0?'
 t_COMENZAR = r'Comenzar'
 t_ESCANEAR = r'Escanear'
+t_CAMBIO = r'Cambio'
 
 # Ignoramos los espacios en blanco
 t_ignore = ' \t'
@@ -36,7 +38,8 @@ t_ignore = ' \t'
 # Definimos la gramática
 def p_command(p):
     '''command : action COORDINATE
-               | COMENZAR'''  # Nueva regla para "Comenzar" sin FILENAME
+                | COMENZAR
+                | CAMBIO'''
     p[0] = (p[1], p[2] if len(p) > 2 else None)
 
 def p_action(p):
@@ -94,6 +97,11 @@ def analizarMensaje(resultado):
             coord = coord_vertical + coord_horizontal
             mensaje = escanear_coordenada(coord)
             return mensaje
+        elif t_CAMBIO == resultado[0]:
+            cambiar_turno(0, False)
+            cambiar_turno(1, True)
+            restaurar_acciones()
+            return "Cambio de turno"
         else:
             return "error tipo 0"
 
@@ -111,6 +119,111 @@ def load_data(file_name):
         next(reader)  # Skip the header
         data = {rows[0]: int(rows[1]) for rows in reader}
     return data
+
+def consultar_turno():
+    filter_criteria = {"codigo": "123456789"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection = db['Aliados']
+
+    document = collection.find_one(filter_criteria)
+
+    if not document:
+        print("Documento no encontrado.")
+        return None
+    
+    turno = document.get("turno", None)
+    client.close()
+    return turno
+
+def consultar_accion(valor):
+    '''El valor 0 es para atacar y el valor 1 es para defender'''
+
+    filter_criteria = {"codigo": "123456789"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection = db['Aliados']
+
+    document = collection.find_one(filter_criteria)
+
+    if not document:
+        print("Documento no encontrado.")
+        return None
+    
+    if valor == 0: accion = document.get("atacar", None)
+    elif valor == 1: accion = document.get("defender", None)
+    else: accion = None
+
+    client.close()
+    return accion
+
+def cambiar_turno(bando, valor):
+    '''El bando 0 es Aliados y el bando 1 es Potencia del eje. El valor es booleano'''
+
+    if bando == 0:
+        filter_criteria = {"codigo": "123456789"}
+        # Conectar a la base de datos MongoDB
+        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        db = client['battleship']
+        collection = db['Aliados']
+
+        update = {"$set": {"turno": valor}}
+        collection.update_one(filter_criteria, update)
+    elif bando == 1:
+        filter_criteria = {"codigo": "987654321"}
+        # Conectar a la base de datos MongoDB
+        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        db = client['battleship']
+        collection = db['Potencia del eje']
+
+        update = {"$set": {"turno": valor}}
+        collection.update_one(filter_criteria, update)
+    else:
+        print("Bando no encontrado")
+
+    client.close()
+
+def cambiar_accion(accion, valor):
+    '''La accion 0 es atacar y la accion 1 es defender. El valor es booleano'''
+
+    if accion == 0:
+        filter_criteria = {"codigo": "123456789"}
+        # Conectar a la base de datos MongoDB
+        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        db = client['battleship']
+        collection = db['Aliados']
+
+        update = {"$set": {"atacar": valor}}
+        collection.update_one(filter_criteria, update)
+    elif accion == 1:
+        filter_criteria = {"codigo": "123456789"}
+        # Conectar a la base de datos MongoDB
+        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        db = client['battleship']
+        collection = db['Aliados']
+
+        update = {"$set": {"defender": valor}}
+        collection.update_one(filter_criteria, update)
+    else:
+        print("Acción no encontrada")
+
+    client.close()
+
+def restaurar_acciones():
+    filter_criteria = {"codigo": "987654321"}
+    # Conectar a la base de datos MongoDB
+    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    db = client['battleship']
+    collection = db['Potencia del eje']
+
+    update = {"$set": {"atacar": True}}
+    collection.update_one(filter_criteria, update)
+    update = {"$set": {"defender": True}}
+    collection.update_one(filter_criteria, update)
+
+    client.close()
 
 def update_mongo_document():
     try:
@@ -130,6 +243,12 @@ def update_mongo_document():
         update = {"$set": {"cantEscanear": 3}}
         collection.update_one(filter_criteria, update)
 
+        update = {"$set": {"atacar": True}}
+        collection.update_one(filter_criteria, update)
+
+        update = {"$set": {"defender": True}}
+        collection.update_one(filter_criteria, update)
+
         # Cerrar la conexión
         client.close()
         return True
@@ -139,6 +258,18 @@ def update_mongo_document():
         return False
 
 def atacar_coordenada(coord):
+    turno = consultar_turno()
+    validar = consultar_accion(0)
+
+    if turno is None and validar is None:
+        return "Error al consultar el turno"
+    
+    if not turno:
+        return "No es tu turno"
+    
+    if not validar:
+        return "No puedes atacar"
+
     filter_criteria = {"codigo": "987654321"}
     # Conectar a la base de datos MongoDB
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
@@ -194,9 +325,22 @@ def atacar_coordenada(coord):
     else:
         message += ", todos los barcos destruidos"
 
+    cambiar_accion(0, False)
     return str(message)
 
 def defender_coordenada(coord):
+    turno = consultar_turno()
+    validar = consultar_accion(1)
+
+    if turno is None and validar is None:
+        return "Error al consultar el turno"
+    
+    if not turno:
+        return "No es tu turno"
+    
+    if not validar:
+        return "No puedes defender"
+
     filter_criteria = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
     client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
@@ -243,6 +387,7 @@ def defender_coordenada(coord):
     else:
         message += ", todos los barcos destruidos"
     
+    cambiar_accion(1, False)
     return str(message)
 
 def obtener_coordenadas_3x3(coord):
