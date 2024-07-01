@@ -5,28 +5,31 @@ Grammar
 Rule 0     S' -> command
 Rule 1     command -> action COORDINATE
 Rule 2     command -> COMENZAR
-Rule 3     command -> ABRIR_TABLERO_PROPIO
-Rule 4     command -> ABRIR_TABLERO_ENEMIGO
-Rule 5     command -> CAMBIO
-Rule 6     action -> ATACAR
-Rule 7     action -> DEFENDER
-Rule 8     action -> ESCANEAR
+Rule 3     command -> TABLERO bando
+Rule 4     command -> CAMBIO
+Rule 5     action -> ATACAR
+Rule 6     action -> DEFENDER
+Rule 7     action -> ESCANEAR
+Rule 8     bando -> PROPIO
+Rule 9     bando -> ENEMIGO
 
 Terminals, with rules where they appear
 
-ABRIR_TABLERO_ENEMIGO : 4
-ABRIR_TABLERO_PROPIO : 3
-ATACAR               : 6
-CAMBIO               : 5
+ATACAR               : 5
+CAMBIO               : 4
 COMENZAR             : 2
 COORDINATE           : 1
-DEFENDER             : 7
-ESCANEAR             : 8
+DEFENDER             : 6
+ENEMIGO              : 9
+ESCANEAR             : 7
+PROPIO               : 8
+TABLERO              : 3
 error                : 
 
 Nonterminals, with rules where they appear
 
 action               : 1
+bando                : 3
 command              : 0
 
 Parsing method: LALR
@@ -36,20 +39,18 @@ state 0
     (0) S' -> . command
     (1) command -> . action COORDINATE
     (2) command -> . COMENZAR
-    (3) command -> . ABRIR_TABLERO_PROPIO
-    (4) command -> . ABRIR_TABLERO_ENEMIGO
-    (5) command -> . CAMBIO
-    (6) action -> . ATACAR
-    (7) action -> . DEFENDER
-    (8) action -> . ESCANEAR
+    (3) command -> . TABLERO bando
+    (4) command -> . CAMBIO
+    (5) action -> . ATACAR
+    (6) action -> . DEFENDER
+    (7) action -> . ESCANEAR
 
     COMENZAR        shift and go to state 3
-    ABRIR_TABLERO_PROPIO shift and go to state 4
-    ABRIR_TABLERO_ENEMIGO shift and go to state 5
-    CAMBIO          shift and go to state 6
-    ATACAR          shift and go to state 7
-    DEFENDER        shift and go to state 8
-    ESCANEAR        shift and go to state 9
+    TABLERO         shift and go to state 4
+    CAMBIO          shift and go to state 5
+    ATACAR          shift and go to state 6
+    DEFENDER        shift and go to state 7
+    ESCANEAR        shift and go to state 8
 
     command                        shift and go to state 1
     action                         shift and go to state 2
@@ -64,7 +65,7 @@ state 2
 
     (1) command -> action . COORDINATE
 
-    COORDINATE      shift and go to state 10
+    COORDINATE      shift and go to state 9
 
 
 state 3
@@ -76,49 +77,67 @@ state 3
 
 state 4
 
-    (3) command -> ABRIR_TABLERO_PROPIO .
+    (3) command -> TABLERO . bando
+    (8) bando -> . PROPIO
+    (9) bando -> . ENEMIGO
 
-    $end            reduce using rule 3 (command -> ABRIR_TABLERO_PROPIO .)
+    PROPIO          shift and go to state 11
+    ENEMIGO         shift and go to state 12
 
+    bando                          shift and go to state 10
 
 state 5
 
-    (4) command -> ABRIR_TABLERO_ENEMIGO .
+    (4) command -> CAMBIO .
 
-    $end            reduce using rule 4 (command -> ABRIR_TABLERO_ENEMIGO .)
+    $end            reduce using rule 4 (command -> CAMBIO .)
 
 
 state 6
 
-    (5) command -> CAMBIO .
+    (5) action -> ATACAR .
 
-    $end            reduce using rule 5 (command -> CAMBIO .)
+    COORDINATE      reduce using rule 5 (action -> ATACAR .)
 
 
 state 7
 
-    (6) action -> ATACAR .
+    (6) action -> DEFENDER .
 
-    COORDINATE      reduce using rule 6 (action -> ATACAR .)
+    COORDINATE      reduce using rule 6 (action -> DEFENDER .)
 
 
 state 8
 
-    (7) action -> DEFENDER .
+    (7) action -> ESCANEAR .
 
-    COORDINATE      reduce using rule 7 (action -> DEFENDER .)
+    COORDINATE      reduce using rule 7 (action -> ESCANEAR .)
 
 
 state 9
 
-    (8) action -> ESCANEAR .
+    (1) command -> action COORDINATE .
 
-    COORDINATE      reduce using rule 8 (action -> ESCANEAR .)
+    $end            reduce using rule 1 (command -> action COORDINATE .)
 
 
 state 10
 
-    (1) command -> action COORDINATE .
+    (3) command -> TABLERO bando .
 
-    $end            reduce using rule 1 (command -> action COORDINATE .)
+    $end            reduce using rule 3 (command -> TABLERO bando .)
+
+
+state 11
+
+    (8) bando -> PROPIO .
+
+    $end            reduce using rule 8 (bando -> PROPIO .)
+
+
+state 12
+
+    (9) bando -> ENEMIGO .
+
+    $end            reduce using rule 9 (bando -> ENEMIGO .)
 

@@ -12,10 +12,10 @@ class BoardGUI:
         self.canvas = Canvas(self.root, width=440, height=440)
         self.canvas.pack()
         self.mongo_uri = mongo_uri
-        self.image_empty = self.resize_image(Image.open('water.png'))  # Imagen para casillas vacías y agua
-        self.image_ship = self.resize_image(Image.open('ship1.png'))  # Imagen para barco posicionado
-        self.image_defending = self.resize_image(Image.open('ship3.png'))  # Imagen para barco en posición de defensa
-        self.image_destroyed = self.resize_image(Image.open('ship2.png'))  # Imagen para barco destruido
+        self.image_empty = self.resize_image(Image.open('imagenes/water.png'))  # Imagen para casillas vacías y agua
+        self.image_ship = self.resize_image(Image.open('imagenes/ship1.png'))  # Imagen para barco posicionado
+        self.image_defending = self.resize_image(Image.open('imagenes/ship3.png'))  # Imagen para barco en posición de defensa
+        self.image_destroyed = self.resize_image(Image.open('imagenes/ship2.png'))  # Imagen para barco destruido
         self.board = {}
         self.hidden_board = {}  # Tablero oculto inicialmente
         self.update_lock = threading.Lock()  # Bloqueo para evitar actualizaciones simultáneas

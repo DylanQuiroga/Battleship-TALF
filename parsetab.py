@@ -6,9 +6,9 @@ _tabversion = '3.10'
 
 _lr_method = 'LALR'
 
-_lr_signature = 'ABRIR_TABLERO_ENEMIGO ABRIR_TABLERO_PROPIO ATACAR CAMBIO COMENZAR COORDINATE DEFENDER ESCANEARcommand : action COORDINATE\n                | COMENZAR\n                | ABRIR_TABLERO_PROPIO\n                | ABRIR_TABLERO_ENEMIGO\n                | CAMBIOaction : ATACAR\n              | DEFENDER\n              | ESCANEAR'
+_lr_signature = 'ATACAR CAMBIO COMENZAR COORDINATE DEFENDER ENEMIGO ESCANEAR PROPIO TABLEROcommand : action COORDINATE\n                | COMENZAR\n                | TABLERO bando\n                | CAMBIOaction : ATACAR\n              | DEFENDER\n              | ESCANEARbando : PROPIO\n             | ENEMIGO'
     
-_lr_action_items = {'COMENZAR':([0,],[3,]),'ABRIR_TABLERO_PROPIO':([0,],[4,]),'ABRIR_TABLERO_ENEMIGO':([0,],[5,]),'CAMBIO':([0,],[6,]),'ATACAR':([0,],[7,]),'DEFENDER':([0,],[8,]),'ESCANEAR':([0,],[9,]),'$end':([1,3,4,5,6,10,],[0,-2,-3,-4,-5,-1,]),'COORDINATE':([2,7,8,9,],[10,-6,-7,-8,]),}
+_lr_action_items = {'COMENZAR':([0,],[3,]),'TABLERO':([0,],[4,]),'CAMBIO':([0,],[5,]),'ATACAR':([0,],[6,]),'DEFENDER':([0,],[7,]),'ESCANEAR':([0,],[8,]),'$end':([1,3,5,9,10,11,12,],[0,-2,-4,-1,-3,-8,-9,]),'COORDINATE':([2,6,7,8,],[9,-5,-6,-7,]),'PROPIO':([4,],[11,]),'ENEMIGO':([4,],[12,]),}
 
 _lr_action = {}
 for _k, _v in _lr_action_items.items():
@@ -17,7 +17,7 @@ for _k, _v in _lr_action_items.items():
       _lr_action[_x][_k] = _y
 del _lr_action_items
 
-_lr_goto_items = {'command':([0,],[1,]),'action':([0,],[2,]),}
+_lr_goto_items = {'command':([0,],[1,]),'action':([0,],[2,]),'bando':([4,],[10,]),}
 
 _lr_goto = {}
 for _k, _v in _lr_goto_items.items():
@@ -27,12 +27,13 @@ for _k, _v in _lr_goto_items.items():
 del _lr_goto_items
 _lr_productions = [
   ("S' -> command","S'",1,None,None,None),
-  ('command -> action COORDINATE','command',2,'p_command','client_GUI_Aliados.py',45),
-  ('command -> COMENZAR','command',1,'p_command','client_GUI_Aliados.py',46),
-  ('command -> ABRIR_TABLERO_PROPIO','command',1,'p_command','client_GUI_Aliados.py',47),
-  ('command -> ABRIR_TABLERO_ENEMIGO','command',1,'p_command','client_GUI_Aliados.py',48),
-  ('command -> CAMBIO','command',1,'p_command','client_GUI_Aliados.py',49),
-  ('action -> ATACAR','action',1,'p_action','client_GUI_Aliados.py',53),
-  ('action -> DEFENDER','action',1,'p_action','client_GUI_Aliados.py',54),
-  ('action -> ESCANEAR','action',1,'p_action','client_GUI_Aliados.py',55),
+  ('command -> action COORDINATE','command',2,'p_command','client_GUI_Aliados.py',47),
+  ('command -> COMENZAR','command',1,'p_command','client_GUI_Aliados.py',48),
+  ('command -> TABLERO bando','command',2,'p_command','client_GUI_Aliados.py',49),
+  ('command -> CAMBIO','command',1,'p_command','client_GUI_Aliados.py',50),
+  ('action -> ATACAR','action',1,'p_action','client_GUI_Aliados.py',54),
+  ('action -> DEFENDER','action',1,'p_action','client_GUI_Aliados.py',55),
+  ('action -> ESCANEAR','action',1,'p_action','client_GUI_Aliados.py',56),
+  ('bando -> PROPIO','bando',1,'p_bando','client_GUI_Aliados.py',60),
+  ('bando -> ENEMIGO','bando',1,'p_bando','client_GUI_Aliados.py',61),
 ]

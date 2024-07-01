@@ -23,8 +23,9 @@ tokens = (
     'COMENZAR',
     'ESCANEAR',
     'CAMBIO',
-    'ABRIR_TABLERO_PROPIO',
-    'ABRIR_TABLERO_ENEMIGO',
+    'TABLERO',
+    'PROPIO',
+    'ENEMIGO'
 )
 
 # Definimos las expresiones regulares para los tokens
@@ -34,8 +35,9 @@ t_COORDINATE = r'[A-J][1-9]0?'
 t_COMENZAR = r'Comenzar'
 t_ESCANEAR = r'Escanear'
 t_CAMBIO = r'Cambio'
-t_ABRIR_TABLERO_PROPIO = r'Aliados'
-t_ABRIR_TABLERO_ENEMIGO = r'Enemigos'
+t_TABLERO = r'Tablero'
+t_PROPIO = r'propio'
+t_ENEMIGO = r'enemigo'
 
 # Ignoramos los espacios en blanco
 t_ignore = ' \t'
@@ -44,8 +46,7 @@ t_ignore = ' \t'
 def p_command(p):
     '''command : action COORDINATE
                 | COMENZAR
-                | ABRIR_TABLERO_PROPIO
-                | ABRIR_TABLERO_ENEMIGO
+                | TABLERO bando
                 | CAMBIO'''
     p[0] = (p[1], p[2] if len(p) > 2 else None)
 
@@ -55,9 +56,14 @@ def p_action(p):
               | ESCANEAR'''
     p[0] = p[1]
 
+def p_bando(p):
+    '''bando : PROPIO
+             | ENEMIGO'''
+    p[0] = p[1]
+
 # Manejamos los errores
 def p_error(p):
-    print(f"Error de sintaxis en: {p.value}")
+    print(f"Error de sintaxis en: {p.value if p else 'EOF'}")
 
 # Construimos el lexer y el parser
 lexer = lex.lex()
@@ -82,8 +88,7 @@ def analizarMensaje(resultado):
                 print("datos cargados correctamente 1")
             if valor:
                 print("datos cargados correctamente 2")
-            mensaje = iniciar_juego()
-            return mensaje 
+
         elif t_ATACAR == resultado[0]:
             coord = resultado[1]
             coord_vertical = coord[0]
@@ -106,14 +111,17 @@ def analizarMensaje(resultado):
             mensaje = escanear_coordenada(coord)
             return mensaje
         elif t_CAMBIO == resultado[0]:
-            cambiar_turno(0, False)
-            cambiar_turno(1, True)
+            cambiar_turno(0, True)
+            cambiar_turno(1, False)
             restaurar_acciones()
             return "Cambio de turno"
-        elif t_ABRIR_TABLERO_PROPIO == resultado[0]:
-            abrirTableroPropio()
-        elif t_ABRIR_TABLERO_ENEMIGO == resultado[0]:
-            abrirTableroEnemigo()
+        elif t_TABLERO == resultado[0]:
+            if t_PROPIO == resultado[1]:
+                abrirTableroPropio()
+            elif t_ENEMIGO == resultado[1]:
+                abrirTableroEnemigo()
+            else:
+                return "error tipo -1"
         else:
             return "error tipo 0"
         
