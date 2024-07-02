@@ -106,7 +106,7 @@ class Server:
 
 
 if __name__ == "__main__":
-    ip_address = "127.0.0.1"
+    ip_address = "26.169.180.70"
     port = 12345
 
     s = Server()

@@ -115,8 +115,8 @@ def analizarMensaje(resultado):
             mensaje = escanear_coordenada(coord)
             return mensaje
         elif t_CAMBIO == resultado[0]:
-            cambiar_turno(0, True)
-            cambiar_turno(1, False)
+            cambiar_turno(0, False)
+            cambiar_turno(1, True)
             restaurar_acciones()
             return "Cambio de turno"
         elif t_TABLERO == resultado[0]:
@@ -691,6 +691,6 @@ class GUI:
 
 
 if __name__ == "__main__":
-    ip_address = "127.0.0.1"
+    ip_address = "26.169.180.70"
     port = 12345
     g = GUI(ip_address, port)
