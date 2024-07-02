@@ -25,7 +25,8 @@ tokens = (
     'CAMBIO',
     'TABLERO',
     'PROPIO',
-    'ENEMIGO'
+    'ENEMIGO',
+    'AYUDA'
 )
 
 # Definimos las expresiones regulares para los tokens
@@ -38,6 +39,7 @@ t_CAMBIO = r'Cambio'
 t_TABLERO = r'Tablero'
 t_PROPIO = r'propio'
 t_ENEMIGO = r'enemigo'
+t_AYUDA = r'Ayuda'
 
 # Ignoramos los espacios en blanco
 t_ignore = ' \t'
@@ -47,7 +49,8 @@ def p_command(p):
     '''command : action COORDINATE
                 | COMENZAR
                 | TABLERO bando
-                | CAMBIO'''
+                | CAMBIO
+                | AYUDA'''
     p[0] = (p[1], p[2] if len(p) > 2 else None)
 
 def p_action(p):
@@ -122,6 +125,8 @@ def analizarMensaje(resultado):
                 abrirTableroEnemigo()
             else:
                 return "error tipo -1"
+        elif t_AYUDA == resultado[0]:
+            return "\nComandos disponibles:\n\nAtacar: Ataca una casilla.\nEjemplo: Atacar A1\n\nDefender: Defiende una casilla.\nEjemplo: Defender A1\n\nEscanear: Escanea una casilla en un area de 3x3\n\nCambio: Cambia el turno\n\nTablero: Permite ver el tablero.\nEjemplo: Tablero propio o Tablero enemigo\n\nComenzar: Inicia el juego\n\nAyuda: Muestra los comandos disponibles\n\n"
         else:
             return "error tipo 0"
         
