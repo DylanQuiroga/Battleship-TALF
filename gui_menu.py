@@ -17,7 +17,7 @@ class BattleshipMenu:
         self.window.resizable(False,False)
 
         # Load and resize the cover image
-        cover_image = Image.open("battleship2.jpg")
+        cover_image = Image.open("imagenes/battleship2.jpg")
         cover_image = cover_image.resize((300, 150), Image.LANCZOS)
         self.cover_photo = ImageTk.PhotoImage(cover_image)
 

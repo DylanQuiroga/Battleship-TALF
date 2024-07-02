@@ -1,16 +1,17 @@
-import socket 
+import socket
 from _thread import *
 import sys
 from collections import defaultdict as df
 import time
 
+from client_GUI_Aliados import iniciar_juego
 
 class Server:
     def __init__(self):
         self.rooms = df(list)
+        self.user_count = 0
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.server.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
 
     def accept_connections(self, ip_address, port):
         self.ip_address = ip_address
@@ -26,44 +27,47 @@ class Server:
 
         self.server.close()
 
-    
     def clientThread(self, connection):
-        user_id = connection.recv(1024).decode().replace("User ", "")
-        room_id = connection.recv(1024).decode().replace("Join ", "")
+        try:
+            user_id = connection.recv(1024).decode().replace("User ", "")
+            room_id = connection.recv(1024).decode().replace("Join ", "")
 
-        if room_id not in self.rooms:
-            connection.send("New Group created".encode())
-        else:
-            connection.send("Welcome to chat room".encode())
+            if room_id not in self.rooms:
+                connection.send("Bienvenido capitán!".encode())
+                connection.send("\nEspere a que se una otro jugador y decidir quien empieza...".encode())
+            else:
+                connection.send("Bienvenido capitán!".encode())
+                connection.send("\nEspere mientras se decide quién empieza...".encode())
 
-        self.rooms[room_id].append(connection)
-
-        while True:
-            try:
+            self.rooms[room_id].append(connection)
+            self.user_count += 1
+            # Send welcome message to the room
+            welcome_message = f"{user_id} se ha unido a la sala"
+            self.broadcast(welcome_message, connection, room_id)
+            #self.broadcast("Espere mientras se decide quién empieza...", connection, room_id)
+            while True:
                 message = connection.recv(1024)
-                print(str(message.decode()))
                 if message:
-                    if str(message.decode()) == "FILE":
+                    if message.decode() == "FILE":
                         self.broadcastFile(connection, room_id, user_id)
-
                     else:
-                        message_to_send = "<" + str(user_id) + "> " + message.decode()
+                        message_to_send = f"<{user_id}> {message.decode()}"
                         self.broadcast(message_to_send, connection, room_id)
-
                 else:
                     self.remove(connection, room_id)
-            except Exception as e:
-                print(repr(e))
-                print("Client disconnected earlier")
-                break
-    
-    
+                    break
+        except Exception as e:
+            print(f"Error: {e}")
+            self.remove(connection, room_id)
+        finally:
+            connection.close()
+
     def broadcastFile(self, connection, room_id, user_id):
         file_name = connection.recv(1024).decode()
         lenOfFile = connection.recv(1024).decode()
         for client in self.rooms[room_id]:
             if client != connection:
-                try: 
+                try:
                     client.send("FILE".encode())
                     time.sleep(0.1)
                     client.send(file_name.encode())
@@ -82,15 +86,12 @@ class Server:
             total = total + len(data)
             for client in self.rooms[room_id]:
                 if client != connection:
-                    try: 
+                    try:
                         client.send(data)
-                        # time.sleep(0.1)
                     except:
                         client.close()
                         self.remove(client, room_id)
         print("Sent")
-
-
 
     def broadcast(self, message_to_send, connection, room_id):
         for client in self.rooms[room_id]:
@@ -101,7 +102,6 @@ class Server:
                     client.close()
                     self.remove(client, room_id)
 
-    
     def remove(self, connection, room_id):
         if connection in self.rooms[room_id]:
             self.rooms[room_id].remove(connection)
