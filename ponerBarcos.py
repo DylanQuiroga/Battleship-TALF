@@ -183,6 +183,14 @@ class GUI:
         self.board.place_ships()
         self.update_ship_tracker()
 
+def center_window(window, window_width=800, window_height=600):
+    """Centra la ventana en la pantalla."""
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    position_x = (screen_width // 2) - (window_width // 2)
+    position_y = (screen_height // 2) - (window_height // 2)
+    window.geometry(f'{window_width}x{window_height}+{position_x}+{position_y}')
+
 def colocarBarcos():
     window = tk.Tk()
     window.title("Batalla Naval")
@@ -190,7 +198,10 @@ def colocarBarcos():
 
     board = Board()
     gui = GUI(window, board)
+    center_window(window, 380, 550)
 
     window.mainloop()
+
+
 
 

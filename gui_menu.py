@@ -15,7 +15,9 @@ class BattleshipMenu:
         self.window.title("Battleship Menu")
         self.window.geometry("400x450")
         self.window.resizable(False,False)
-
+        self.center_window(self.window)
+        
+    
         # Load and resize the cover image
         cover_image = Image.open("imagenes/battleship2.jpg")
         cover_image = cover_image.resize((300, 150), Image.LANCZOS)
@@ -45,6 +47,21 @@ class BattleshipMenu:
 
         # Initialize instructions_window to None
         self.instructions_window = None
+    
+    def center_window(self, window):
+        window_width = 400
+        window_height = 450
+
+        # Obtiene las dimensiones de la pantalla
+        screen_width = window.winfo_screenwidth()
+        screen_height = window.winfo_screenheight()
+
+        # Calcula la posición x y y para centrar la ventana
+        position_x = (screen_width // 2) - (window_width // 2)
+        position_y = (screen_height // 2) - (window_height // 2)
+
+        # Establece la geometría de la ventana con la posición calculada
+        window.geometry(f'{window_width}x{window_height}+{position_x}+{position_y}')
 
     def play_machine(self):
         self.window.destroy() 
@@ -72,9 +89,12 @@ class BattleshipMenu:
         # Crear una nueva ventana
         self.player_choice_window = tk.Toplevel(self.window)
         self.player_choice_window.title("Bandos")
-    
+        
+        
         # Configurar el tamaño de la ventana si es necesario
         self.player_choice_window.geometry('500x300')
+        
+        self.center_window(self.player_choice_window)
 
         title_label = tk.Label(self.player_choice_window, text="Escoge tu bando", font=("Arial", 20))
         title_label.pack(pady=(10,20))

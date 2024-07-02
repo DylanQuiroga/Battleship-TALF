@@ -75,7 +75,14 @@ class PartidaGUI:
         messagebox.showinfo("Resultado", mensaje)
 
 
-
+def center_window(window, window_width=800, window_height=600):
+    """Centra la ventana en la pantalla."""
+    screen_width = window.winfo_screenwidth()
+    screen_height = window.winfo_screenheight()
+    position_x = (screen_width // 2) - (window_width // 2)
+    position_y = (screen_height // 2) - (window_height // 2)
+    window.geometry(f'{window_width}x{window_height}+{position_x}+{position_y}')
+    
 def partida():
     colocarBarcos()
     posicionarShip_Machine()
@@ -89,6 +96,7 @@ def partida():
     window.resizable(False, False)
     
     partida_gui = PartidaGUI(window, tablero_jugador, tablero_maquina)
+    center_window(window, 500, 500)
     
     window.mainloop()
 
