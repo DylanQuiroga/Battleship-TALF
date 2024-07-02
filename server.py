@@ -4,8 +4,6 @@ import sys
 from collections import defaultdict as df
 import time
 
-from client_GUI_Aliados import iniciar_juego
-
 class Server:
     def __init__(self):
         self.rooms = df(list)
