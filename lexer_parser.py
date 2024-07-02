@@ -1,0 +1,132 @@
+import ply.lex as lex
+import ply.yacc as yacc
+from data_operaciones import atacar_coordenada, defender_coordenada
+
+# Definimos los tokens
+tokens = (
+    'ATACAR',
+    'DEFENDER',
+    'COORDINATE',
+    'COMENZAR'
+)
+
+# Definimos las expresiones regulares para los tokens
+t_ATACAR = r'Atacar'
+t_DEFENDER = r'Defender'
+t_COORDINATE = r'[A-J][1-9]0?'
+t_COMENZAR = r'Comenzar'
+
+# Ignoramos los espacios en blanco
+t_ignore = ' \t'
+
+# Definimos la gramática
+def p_command(p):
+    '''command : action COORDINATE
+               | COMENZAR'''
+    if len(p) == 2:
+        p[0] = (p[1], None)
+    else:
+        p[0] = (p[1], p[2])
+
+def p_action(p):
+    '''action : ATACAR
+              | DEFENDER'''
+    p[0] = p[1]
+
+# Manejamos los errores
+def p_error(p):
+    if p:
+        print(f"Error de sintaxis en '{p.value}', línea {p.lineno}")
+    else:
+        print("Error de sintaxis al final del archivo")
+
+
+# Construimos el lexer y el parser
+lexer = lex.lex()
+parser = yacc.yacc()
+
+def analisis(entrada,csv):
+    try:
+        resultado = parser.parse(entrada)
+        mensaje = analizarMensaje(resultado,csv)
+        return mensaje
+    except Exception as e:
+        # Si no es un comando válido, devolvemos el mensaje original
+        mensaje = "error, no es un comando valido"
+        return mensaje
+
+def analizarMensaje(resultado,csv):
+    try:
+        if t_COMENZAR == resultado[0]:
+            data = load_data(csv)
+            if data:
+                print("datos cargados correctamente 1")
+            if valor:
+                print("datos cargados correctamente 2")
+
+        elif t_ATACAR == resultado[0]:
+            coord = resultado[1]
+            coord_vertical = coord[0]
+            coord_horizontal = coord[1:]
+            coord = coord_vertical + coord_horizontal
+            mensaje = atacar_coordenada(coord,csv)
+            return mensaje
+        
+        elif t_DEFENDER == resultado[0]:
+            csv = "tablero.csv"
+            coord = resultado[1]
+            coord_vertical = coord[0]
+            coord_horizontal = coord[1:]
+            coord = coord_vertical + coord_horizontal
+            mensaje = defender_coordenada(coord,csv)
+            return mensaje
+        else:
+            return "error tipo 0"
+
+    except lex.LexError as lex_error:
+        print(f"Error léxico: {lex_error}")
+        return "error tipo 1"
+    except Exception as e:
+        print(e)
+        return "error tipo 2"
+    pass
+
+def analisisMaquina(entrada,csv):
+    try:
+        resultado = parser.parse(entrada)
+        mensaje = analizarComandoMaquina(resultado, csv)
+        return mensaje
+    except Exception as e:
+        # Si no es un comando válido, devolvemos el mensaje original
+        mensaje = "no es un comando valido"
+        return mensaje
+    
+def analizarComandoMaquina(resultado, csv):
+    try:
+
+        if t_ATACAR == resultado[0]:
+            coord = resultado[1]
+            coord_vertical = coord[0]
+            coord_horizontal = coord[1:]
+            coord = coord_vertical + coord_horizontal
+            mensaje = atacar_coordenada(coord,csv)
+            return mensaje
+        
+        elif t_DEFENDER == resultado[0]:
+            csv = "machine_board.csv"
+            coord = resultado[1]
+            coord_vertical = coord[0]
+            coord_horizontal = coord[1:]
+            coord = coord_vertical + coord_horizontal
+            mensaje = defender_coordenada(coord,csv)
+            return mensaje
+        else:
+            return "error tipo 0"
+
+    except lex.LexError as lex_error:
+        print(f"Error léxico: {lex_error}")
+        return "error tipo 1"
+    except Exception as e:
+        print(e)
+        return "error tipo 2"
+    pass

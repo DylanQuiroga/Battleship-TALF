@@ -11,6 +11,8 @@ class BoardGUI:
         self.board = self.load_board_from_csv(csv_file)
         self.image_marked = self.resize_image(Image.open('ship1.png'))  # Ruta de la imagen para casillas marcadas
         self.draw_board()
+        
+         # Crear campo de entrada y botón
         self.entry = Entry(self.root)
         self.entry.pack()
 
@@ -53,5 +55,16 @@ class BoardGUI:
                     self.canvas.create_rectangle(x0, y0, x1, y1, fill='DodgerBlue2')
 
     def process_command(self):
-        command = self.entry.get()
-        return command
+        try:
+            command = self.entry.get()
+            return command
+        except Exception as e:
+            print(f"Error al obtener comando: {e}")
+
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    root.title("Tablero de Juego")
+    csv_file = 'tablero.csv'  # Reemplaza con tu archivo CSV real
+    board_gui = BoardGUI(root, csv_file)
+    root.mainloop()

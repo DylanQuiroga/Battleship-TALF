@@ -6,7 +6,6 @@ from PIL import Image, ImageTk
 from jugadorVSmaquina import partida
 from subprocess import Popen, PIPE
 import webbrowser
-
 from ponerBarcos import colocarBarcos
 
 
