@@ -7,22 +7,24 @@ Rule 1     command -> action COORDINATE
 Rule 2     command -> COMENZAR
 Rule 3     command -> TABLERO bando
 Rule 4     command -> CAMBIO
-Rule 5     action -> ATACAR
-Rule 6     action -> DEFENDER
-Rule 7     action -> ESCANEAR
-Rule 8     bando -> PROPIO
-Rule 9     bando -> ENEMIGO
+Rule 5     command -> AYUDA
+Rule 6     action -> ATACAR
+Rule 7     action -> DEFENDER
+Rule 8     action -> ESCANEAR
+Rule 9     bando -> PROPIO
+Rule 10    bando -> ENEMIGO
 
 Terminals, with rules where they appear
 
-ATACAR               : 5
+ATACAR               : 6
+AYUDA                : 5
 CAMBIO               : 4
 COMENZAR             : 2
 COORDINATE           : 1
-DEFENDER             : 6
-ENEMIGO              : 9
-ESCANEAR             : 7
-PROPIO               : 8
+DEFENDER             : 7
+ENEMIGO              : 10
+ESCANEAR             : 8
+PROPIO               : 9
 TABLERO              : 3
 error                : 
 
@@ -41,16 +43,18 @@ state 0
     (2) command -> . COMENZAR
     (3) command -> . TABLERO bando
     (4) command -> . CAMBIO
-    (5) action -> . ATACAR
-    (6) action -> . DEFENDER
-    (7) action -> . ESCANEAR
+    (5) command -> . AYUDA
+    (6) action -> . ATACAR
+    (7) action -> . DEFENDER
+    (8) action -> . ESCANEAR
 
     COMENZAR        shift and go to state 3
     TABLERO         shift and go to state 4
     CAMBIO          shift and go to state 5
-    ATACAR          shift and go to state 6
-    DEFENDER        shift and go to state 7
-    ESCANEAR        shift and go to state 8
+    AYUDA           shift and go to state 6
+    ATACAR          shift and go to state 7
+    DEFENDER        shift and go to state 8
+    ESCANEAR        shift and go to state 9
 
     command                        shift and go to state 1
     action                         shift and go to state 2
@@ -65,7 +69,7 @@ state 2
 
     (1) command -> action . COORDINATE
 
-    COORDINATE      shift and go to state 9
+    COORDINATE      shift and go to state 10
 
 
 state 3
@@ -78,13 +82,13 @@ state 3
 state 4
 
     (3) command -> TABLERO . bando
-    (8) bando -> . PROPIO
-    (9) bando -> . ENEMIGO
+    (9) bando -> . PROPIO
+    (10) bando -> . ENEMIGO
 
-    PROPIO          shift and go to state 11
-    ENEMIGO         shift and go to state 12
+    PROPIO          shift and go to state 12
+    ENEMIGO         shift and go to state 13
 
-    bando                          shift and go to state 10
+    bando                          shift and go to state 11
 
 state 5
 
@@ -95,49 +99,56 @@ state 5
 
 state 6
 
-    (5) action -> ATACAR .
+    (5) command -> AYUDA .
 
-    COORDINATE      reduce using rule 5 (action -> ATACAR .)
+    $end            reduce using rule 5 (command -> AYUDA .)
 
 
 state 7
 
-    (6) action -> DEFENDER .
+    (6) action -> ATACAR .
 
-    COORDINATE      reduce using rule 6 (action -> DEFENDER .)
+    COORDINATE      reduce using rule 6 (action -> ATACAR .)
 
 
 state 8
 
-    (7) action -> ESCANEAR .
+    (7) action -> DEFENDER .
 
-    COORDINATE      reduce using rule 7 (action -> ESCANEAR .)
+    COORDINATE      reduce using rule 7 (action -> DEFENDER .)
 
 
 state 9
+
+    (8) action -> ESCANEAR .
+
+    COORDINATE      reduce using rule 8 (action -> ESCANEAR .)
+
+
+state 10
 
     (1) command -> action COORDINATE .
 
     $end            reduce using rule 1 (command -> action COORDINATE .)
 
 
-state 10
+state 11
 
     (3) command -> TABLERO bando .
 
     $end            reduce using rule 3 (command -> TABLERO bando .)
 
 
-state 11
-
-    (8) bando -> PROPIO .
-
-    $end            reduce using rule 8 (bando -> PROPIO .)
-
-
 state 12
 
-    (9) bando -> ENEMIGO .
+    (9) bando -> PROPIO .
 
-    $end            reduce using rule 9 (bando -> ENEMIGO .)
+    $end            reduce using rule 9 (bando -> PROPIO .)
+
+
+state 13
+
+    (10) bando -> ENEMIGO .
+
+    $end            reduce using rule 10 (bando -> ENEMIGO .)
 
