@@ -60,7 +60,7 @@ class BoardGUI:
             return command
         except Exception as e:
             print(f"Error al obtener comando: {e}")
-            return None  # O maneja el error según tu lógica de aplicación
+
 
 if __name__ == "__main__":
     root = tk.Tk()

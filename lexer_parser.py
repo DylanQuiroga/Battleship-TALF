@@ -52,7 +52,7 @@ def analisis(entrada,csv):
         return mensaje
     except Exception as e:
         # Si no es un comando válido, devolvemos el mensaje original
-        mensaje = "no es un comando valido"
+        mensaje = "error, no es un comando valido"
         return mensaje
 
 def analizarMensaje(resultado,csv):

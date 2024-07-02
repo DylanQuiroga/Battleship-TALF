@@ -68,7 +68,7 @@ def comprobar_ganador(csv):
     
 def verificar_tablaVacia(tablero):
     for estado in tablero:
-        if estado["State"] == '1':
+        if estado["State"] == ["1","2"]:
             return False
     return True
 
@@ -93,29 +93,44 @@ def modificar_csv(tablero, coord, nuevo_estado):
             break
     return tablero
 
-def generar_comando_maquina(tablero_jugador_csv):
+def generar_comando_maquina(tablero_jugador_csv, tablero_maquina_csv):
     # Leer el tablero del jugador desde el archivo CSV
     tablero_jugador = load_board(tablero_jugador_csv)
+    tablero_maquina = load_board(tablero_maquina_csv)
     
     # Obtener todas las posibles coordenadas (A1 a J10)
     coordenadas = [f"{letra}{numero}" for letra in 'ABCDEFGHIJ' for numero in range(1, 11)]
     
     # Filtrar las coordenadas que no han sido atacadas aún
-    coordenadas_disponibles = []
+    coordenadasAtaques_disponibles = []
     for item in tablero_jugador:
-        if item["State"] != '1':
-            coordenadas_disponibles.append(item["Coord"])
+        if item["State"] != '-1':
+            coordenadasAtaques_disponibles.append(item["Coord"])
+    
+    # Filtrar las coordenadas que se pueden defender
+    coordenadasDefender_disponibles = []
+    for item in tablero_maquina:
+        if item["State"] == '1':
+            coordenadasDefender_disponibles.append(item["Coord"])
     
     # Si no hay coordenadas disponibles, se puede manejar según la lógica de tu juego
-    if not coordenadas_disponibles:
+    if not coordenadasAtaques_disponibles:
         return None
     
     # Elegir una coordenada aleatoria entre las disponibles
-    coordenada = random.choice(coordenadas_disponibles)
+    coordenada = random.choice(coordenadasAtaques_disponibles)
     
     acciones = ['Atacar', 'Defender']
     accion = random.choice(acciones)
     
+    if accion == 'Atacar':
+        # Elegir una coordenada aleatoria entre las disponibles para atacar
+        coordenada = random.choice(coordenadasAtaques_disponibles)
+    elif accion == 'Defender':
+        # Elegir una coordenada aleatoria entre las disponibles para defender
+        coordenada = random.choice(coordenadasDefender_disponibles)
+    
     comando = f"{accion} {coordenada}"
     
     return comando
+
