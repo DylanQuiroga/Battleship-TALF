@@ -326,6 +326,9 @@ def atacar_coordenada(coord):
                 if random.random() < 0.5:
                     item["state"] = -1
                     update_needed = True
+                    message = "¡Impacto en un barco en posición de defensa!"
+                else:
+                    message = "El misil ha fallado"
                 break
 
         if item["state"] in [1, 2]:
@@ -343,13 +346,7 @@ def atacar_coordenada(coord):
             message = "¡Impacto en un barco!"
         elif coord_state == -1:
             message = "Ya habías impactado este barco antes"
-        elif coord_state == 2:
-            if random.random() < 0.5:
-                data[coord] = -1
-                message = "¡Impacto en un barco en posición de defensa!"
-            else:
-                message = "El misil ha fallado"
-
+            
     if still_ships:
         message += ", aún hay barcos"
     else:
