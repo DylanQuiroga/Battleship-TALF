@@ -91,7 +91,8 @@ def analizarMensaje(resultado):
                 print("datos cargados correctamente 1")
             if valor:
                 print("datos cargados correctamente 2")
-
+            mensaje = iniciar_juego()
+            return mensaje
         elif t_ATACAR == resultado[0]:
             coord = resultado[1]
             coord_vertical = coord[0]
