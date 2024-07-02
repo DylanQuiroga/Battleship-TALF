@@ -9,7 +9,10 @@ class BoardGUI:
         self.canvas = Canvas(self.root, width=440, height=440)  # Ajustar el tamaño del canvas
         self.canvas.pack()
         self.board = self.load_board_from_csv(csv_file)
-        self.image_marked = self.resize_image(Image.open('ship1.png'))  # Ruta de la imagen para casillas marcadas
+        self.image_empty = self.resize_image(Image.open('imagenes/water.png'))  # Imagen para casillas vacías y agua
+        self.image_ship = self.resize_image(Image.open('imagenes/ship1.png'))  # Imagen para barco posicionado
+        self.image_defending = self.resize_image(Image.open('imagenes/ship3.png'))  # Imagen para barco en posición de defensa
+        self.image_destroyed = self.resize_image(Image.open('imagenes/ship2.png'))  # Ruta de la imagen para casillas marcadas
         self.draw_board()
         
          # Crear campo de entrada y botón
@@ -50,7 +53,11 @@ class BoardGUI:
                 x1, y1 = x0 + cell_size, y0 + cell_size
                 self.canvas.create_rectangle(x0, y0, x1, y1, outline='black')
                 if self.board.get(coord) == 1:
-                    self.canvas.create_image(x0, y0, anchor=tk.NW, image=self.image_marked)
+                    self.canvas.create_image(x0, y0, anchor=tk.NW, image=self.image_ship)
+                elif self.board.get(coord) == -1:
+                    self.canvas.create_image(x0, y0, anchor=tk.NW, image=self.image_destroyed)
+                elif self.board.get(coord) == 2:
+                    self.canvas.create_image(x0, y0, anchor=tk.NW, image=self.image_defending)    
                 else:
                     self.canvas.create_rectangle(x0, y0, x1, y1, fill='DodgerBlue2')
 

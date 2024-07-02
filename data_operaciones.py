@@ -68,7 +68,7 @@ def comprobar_ganador(csv):
     
 def verificar_tablaVacia(tablero):
     for estado in tablero:
-        if estado["State"] == ["1","2"]:
+        if estado["State"] in ["1", "2"]:
             return False
     return True
 

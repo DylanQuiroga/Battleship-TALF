@@ -37,7 +37,7 @@ class PartidaGUI:
                     self.board_gui.board = self.board_gui.load_board_from_csv(self.tablero_jugador)
                     self.board_gui.draw_board()
                     
-                    if comprobar_ganador(self.tablero_maquina):
+                    if comprobar_ganador(self.tablero_maquina) is True:
                         self.juego_en_curso = False
                         print("Ganaste")
                         self.mostrar_mensaje("¡Felicidades! Has ganado.")
