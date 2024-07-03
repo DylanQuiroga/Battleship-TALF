@@ -196,7 +196,7 @@ def consultar_accion(valor):
 
     filter_criteria = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
     db = client['battleship']
     collection = db['Aliados']
 
@@ -216,7 +216,7 @@ def consultar_accion(valor):
 def consultar_turno():
     filter_criteria = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
     db = client['battleship']
     collection = db['Aliados']
 
@@ -236,7 +236,7 @@ def cambiar_turno(bando, valor):
     if bando == 0:
         filter_criteria = {"codigo": "123456789"}
         # Conectar a la base de datos MongoDB
-        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
         db = client['battleship']
         collection = db['Aliados']
 
@@ -250,7 +250,7 @@ def cambiar_turno(bando, valor):
     elif bando == 1:
         filter_criteria = {"codigo": "987654321"}
         # Conectar a la base de datos MongoDB
-        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
         db = client['battleship']
         collection = db['Potencia del eje']
 
@@ -273,7 +273,7 @@ def cambiar_accion(accion, valor):
     if accion == 0:
         filter_criteria = {"codigo": "123456789"}
         # Conectar a la base de datos MongoDB
-        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
         db = client['battleship']
         collection = db['Aliados']
 
@@ -282,7 +282,7 @@ def cambiar_accion(accion, valor):
     elif accion == 1:
         filter_criteria = {"codigo": "123456789"}
         # Conectar a la base de datos MongoDB
-        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
         db = client['battleship']
         collection = db['Aliados']
 
@@ -296,7 +296,7 @@ def cambiar_accion(accion, valor):
 def restaurar_acciones():
     filter_criteria = {"codigo": "987654321"}
     # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
     db = client['battleship']
     collection = db['Potencia del eje']
 
@@ -310,7 +310,7 @@ def restaurar_acciones():
 def restaurar_acciones_aliados():
     filter_criteria = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
     db = client['battleship']
     collection = db['Aliados']
 
@@ -326,7 +326,7 @@ def update_mongo_document():
         global data
         filter_criteria = {"codigo": "123456789"}
         # Conectar a la base de datos MongoDB
-        client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+        client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
         db = client['battleship']
         collection = db['Aliados']
 
@@ -368,7 +368,7 @@ def atacar_coordenada(coord):
 
     filter_criteria = {"codigo": "987654321"}
     # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
     db = client['battleship']
     collection = db['Potencia del eje']
 
@@ -439,7 +439,7 @@ def defender_coordenada(coord):
 
     filter_criteria = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
     db = client['battleship']
     collection = db['Aliados']
 
@@ -497,7 +497,7 @@ def escanear_coordenada(coord):
     filter_criteria_PdE = {"codigo": "987654321"}
     filter_criteria_Aliados = {"codigo": "123456789"}
     # Conectar a la base de datos MongoDB
-    client = MongoClient('mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/')
+    client = MongoClient('mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin')
     db = client['battleship']
     collection_PdE = db['Potencia del eje']
     collection_Aliados = db['Aliados']

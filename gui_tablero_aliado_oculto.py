@@ -86,7 +86,7 @@ class BoardGUI:
         self.root.after(2000, self.update_board)  # Actualizar cada 2 segundos
 
 if __name__ == "__main__":
-    mongo_uri = 'mongodb+srv://monkey3:tuperacomolapapaya@basedatosalfacharlie.dwvwxn6.mongodb.net/'  # Tu URI de MongoDB
+    mongo_uri = 'mongodb://monkey5:TalfBattleship123@ac-tr7vlk6-shard-00-00.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-01.dwvwxn6.mongodb.net:27017,ac-tr7vlk6-shard-00-02.dwvwxn6.mongodb.net:27017/?replicaSet=atlas-wrsqyw-shard-0&ssl=true&authSource=admin'  # Tu URI de MongoDB
     root = tk.Tk()
     #pantalla grande root.geometry("440x440+1200+520")
     root.geometry("440x440+920+300")
