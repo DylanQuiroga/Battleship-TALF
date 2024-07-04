@@ -95,7 +95,6 @@ class BattleshipMenu:
         self.player_choice_window.geometry('500x300')
         
         self.center_window(self.player_choice_window)
-
         title_label = tk.Label(self.player_choice_window, text="Escoge tu bando", font=("Arial", 20))
         title_label.pack(pady=(10,20))
 
